@@ -1,0 +1,2 @@
+CREATE TABLE `music`.`artist` (`artistID` INT(10) NULL , `artistName` VARCHAR(45) NOT NULL , `artistBio` TEXT NOT NULL , `year` INT(10) NOT NULL , `artistPhoto` VARCHAR(45) NOT NULL , `status` VARCHAR(45) NOT NULL , PRIMARY KEY (`artistID`)) ENGINE = InnoDB;
+CREATE TABLE `music`.`genre` (`genreID` INT(10) NOT NULL , `genreName` VARCHAR(45) NOT NULL , `Description` TEXT NOT NULL , `artistID` INT(10) NOT NULL , PRIMARY KEY (`genreID`)) ENGINE = InnoDB;
