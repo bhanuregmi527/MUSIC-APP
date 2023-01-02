@@ -1,7 +1,6 @@
 const express= require('express');
 const bodyparser= require('body-parser');
 const mysql= require('mysql');
-const { connection } = require('mongoose');
 var app= express();
 require('dotenv').config();
 const routes=require('./Routes/songs')

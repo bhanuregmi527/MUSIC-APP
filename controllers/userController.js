@@ -100,5 +100,14 @@ class UserController{
     static loggedUser = async (req, res) => {
         res.send({ "user": req.user })
       }
+
+    static deleteUserById= async(req,res)=>{
+        const id= req.params.id
+        pool.query('DELETE FROM users WHERE id = ?',[id], function (error, results, fields) {
+        if (error) throw error;
+     res.send(' deleted user from the database');
+        });
+
+      }
 }
 module.exports= UserController
