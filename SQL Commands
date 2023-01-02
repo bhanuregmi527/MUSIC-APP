@@ -1,2 +1,9 @@
 CREATE TABLE `music`.`artist` (`artistID` INT(10) NULL , `artistName` VARCHAR(45) NOT NULL , `artistBio` TEXT NOT NULL , `year` INT(10) NOT NULL , `artistPhoto` VARCHAR(45) NOT NULL , `status` VARCHAR(45) NOT NULL , PRIMARY KEY (`artistID`)) ENGINE = InnoDB;
 CREATE TABLE `music`.`genre` (`genreID` INT(10) NOT NULL , `genreName` VARCHAR(45) NOT NULL , `Description` TEXT NOT NULL , `artistID` INT(10) NOT NULL , PRIMARY KEY (`genreID`)) ENGINE = InnoDB;
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  password_confirm VARCHAR(255) NOT NULL
+);

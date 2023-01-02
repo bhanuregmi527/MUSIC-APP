@@ -7,9 +7,10 @@ require('dotenv').config();
 const routes=require('./Routes/songs')
 const artistRoutes=require('./Routes/artist')
 const genreRoutes=require('./Routes/genre')
+const userRoutes=require('./Routes/userRoutes');
 
 
-const port= process.env.PORT||5000;
+const port= process.env.PORT||6000;
 
 //parsing middleware
 app.use(bodyparser.urlencoded({extended:false}));
@@ -19,7 +20,8 @@ app.use(bodyparser.json());
 app.get('/',(req,res)=>{
   res.send('hello this is root route')
 })
-app.use('/v1',routes,artistRoutes,genreRoutes)
+app.use('/v1',routes,artistRoutes,genreRoutes,userRoutes)
+
 
 //Database
 const pool= mysql.createPool({
