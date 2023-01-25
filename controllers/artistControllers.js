@@ -1,9 +1,36 @@
-const mysql = require("mysql2");
+const multer = require("multer");
+const mysql = require("mysql");
+const AppError = require("../middlewares/appErrors");
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   database: process.env.DB_NAME,
 });
+
+//Image Upload
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/img/artist");
+  },
+  filename: function (req, file, cb) {
+    const artistName = req.body.artistName;
+    const ext = file.mimetype.split("/")[1];
+    cb(null, `user-${artistName}-${Date.now()}.${ext}`);
+  },
+});
+const multerFiletr = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Not an image ! Please Upload only Image", 400), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  fileFilter: multerFiletr,
+});
+const uploadArtistPhoto = upload.single("artistPhoto");
 
 const getAllArtist = async (req, res) => {
   pool.query("SELECT * FROM artist", function (error, results, fields) {
@@ -25,8 +52,8 @@ const getSingleArtist = async (req, res) => {
 };
 
 const createArtist = async (req, res) => {
-  const { artistID, artistName, artistBio, year, artistPhoto, status } =
-    req.body;
+  const { artistID, artistName, artistBio, year, status } = req.body;
+  const { artistPhoto } = req.file;
   pool.query(
     "INSERT INTO artist (artistID,artistName,artistBio,year,artistPhoto,status) VALUES (?,?,?,?,?,?)",
     [artistID, artistName, artistBio, year, artistPhoto, status],
@@ -68,6 +95,7 @@ const deleteAllArtist = async (req, res) => {
 };
 
 module.exports = {
+  uploadArtistPhoto,
   getAllArtist,
   getSingleArtist,
   createArtist,

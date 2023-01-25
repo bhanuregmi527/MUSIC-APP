@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const checkUserAuth = require("../middlewares/auth-middleware");
 const {
+  uploadArtistPhoto,
   getAllArtist,
   getSingleArtist,
   createArtist,
@@ -15,6 +16,7 @@ router.get("/getAllArtist", getAllArtist);
 router.get("/getSingleArtist/:artistID", getSingleArtist);
 router.post(
   "/createArtist",
+  uploadArtistPhoto,
   // checkUserAuth,
   createArtist
 );
