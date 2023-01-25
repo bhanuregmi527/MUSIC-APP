@@ -32,8 +32,8 @@ router.delete(
 );
 router.delete(
   "/deleteAllArtist",
-  checkUserAuth,
-  restrictTo("admin"),
+  // checkUserAuth,
+  // restrictTo("admin"),
   deleteAllArtist
 );
 
