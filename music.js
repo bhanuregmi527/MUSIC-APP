@@ -7,6 +7,8 @@ const routes=require('./Routes/songs')
 const artistRoutes=require('./Routes/artist')
 const genreRoutes=require('./Routes/genre')
 const userRoutes=require('./Routes/userRoutes');
+const upload= require('./Routes/artist').upload
+
 
 
 const port= process.env.PORT||6000;
@@ -19,7 +21,10 @@ app.use(bodyparser.json());
 app.get('/',(req,res)=>{
   res.send('hello this is root route')
 })
-app.use('/v1',routes,artistRoutes,genreRoutes,userRoutes)
+app.use('/v1',routes)
+app.use('/v1',artistRoutes)
+app.use('/v1',genreRoutes)
+app.use('/v1',userRoutes)
 
 
 //Database
