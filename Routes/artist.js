@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb) {
       const  artistName  = req.body.artistName;
       const ext = file.mimetype.split('/')[1];
-      cb(null, `user-${artistName}-${Date.now()}.${ext}`);
+      cb(null, `user-${req.user.artistName}-${Date.now()}.${ext}`);
     }
   });
   const multerFiletr = (req, file, cb) => {

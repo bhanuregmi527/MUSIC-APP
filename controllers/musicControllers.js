@@ -1,9 +1,37 @@
 const mysql = require("mysql2");
+const multer= require('multer')
+const AppError=require('../middlewares/appErrors')
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   database: process.env.DB_NAME,
 });
+
+const songStorage=multer.diskStorage({
+  destination: (req,file,cb)=>{
+    cb(null,'public/songs');
+  },
+  filename:(req,file,cb)=>{
+    const ext=file.mimetype.split('/')[1];
+    cb(null,`songs-${req.songID}-${Date.now()}.${ext}`);
+
+  }
+
+})
+const songFilter=(req,file,cb)=>{
+  if(file.mimetype.startsWith('audio')){
+    cb(null,true)
+  }else{
+    cb(new AppError('not an audio ! please upload only audio',400),false)
+  }
+}
+
+const upload=multer({
+  storage:songStorage,
+  fileFilter:songFilter
+});
+
+
 
 const getSongs = async (req, res) => {
   pool.query("SELECT * FROM songs", function (error, results, fields) {
@@ -33,9 +61,10 @@ const addSong = async (req, res) => {
     dateAdded,
     artistID,
   } = req.body;
-  pool.query(
-    "INSERT INTO songs (songID, songName, Description,songDuration,genreID,dateAdded,artistID) VALUES (?,?,?,?,?,?,?)",
-    [songID, songName, Description, songDuration, genreID, dateAdded, artistID],
+  const song =req.file.path;
+  pool.query( 
+    "INSERT INTO songs (songID, songName, Description,songDuration,genreID,dateAdded,artistID,song) VALUES (?,?,?,?,?,?,?,?)",
+    [songID, songName, Description, songDuration, genreID, dateAdded, artistID,song],
     function (error, results, fields) {
       if (error) throw error;
       res.send("Song added to the database");
@@ -75,6 +104,7 @@ const deleteAllSong = async (req, res) => {
   });
 };
 module.exports = {
+  upload,
   getSongs,
   addSong,
   updatesong,

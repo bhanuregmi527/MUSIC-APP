@@ -3,11 +3,11 @@ const bodyparser= require('body-parser');
 const mysql= require('mysql');
 var app= express();
 require('dotenv').config();
-const routes=require('./Routes/songs')
-const artistRoutes=require('./Routes/artist')
-const genreRoutes=require('./Routes/genre')
-const userRoutes=require('./Routes/userRoutes');
-const upload= require('./Routes/artist').upload
+// const routes=require('./Routes/songs')
+// const artistRoutes=require('./Routes/artist')
+// const genreRoutes=require('./Routes/genre')
+// const userRoutes=require('./Routes/userRoutes');
+// const upload= require('./Routes/artist').upload
 
 
 require("dotenv").config();
@@ -16,7 +16,7 @@ const artistRoutes = require("./Routes/artist");
 const genreRoutes = require("./Routes/genre");
 const userRoutes = require("./Routes/userRoutes");
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 6000;
 
 //parsing middleware
 app.use(bodyparser.urlencoded({ extended: false }));
