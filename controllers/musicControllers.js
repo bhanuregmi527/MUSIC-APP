@@ -1,5 +1,6 @@
 const mysql = require("mysql2");
-const multer= require('multer')
+const multer= require('multer');
+const path = require('path');
 const AppError=require('../middlewares/appErrors')
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -12,8 +13,10 @@ const songStorage=multer.diskStorage({
     cb(null,'public/songs');
   },
   filename:(req,file,cb)=>{
+    const artistID=req.body.artistID;
     const ext=file.mimetype.split('/')[1];
-    cb(null,`songs-${req.songID}-${Date.now()}.${ext}`);
+    cb(null,file.fieldname + "-" + Date.now() +"-"+artistID+"-"+path.extname(file.originalname));
+    console.log(req.body)
 
   }
 
