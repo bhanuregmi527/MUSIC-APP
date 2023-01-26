@@ -53,6 +53,25 @@ const deleteAllSong= async (req,res)=>{
 
  });
 }
+
+
+const addPlaylist = async (req, res) => {
+  const { playlistName, dateCreated } = req.body;
+  const userID = req.params.userID;
+  pool.query('INSERT INTO playlists (userID, playlistName, dateCreated) VALUES (?,?,?,?)', [userID, playlistName, dateCreated], function (error, results, fields) {
+    if (error) throw error;
+    res.send('Playlist added to the database');
+  });
+}
+
+const addSongToPlaylist = async (req, res) => {
+  const { songID, playlistID} = req.body;
+  pool.query('INSERT INTO songs (songID, playlistID) VALUES (?,?)', [songID, playlistID], function (error, results, fields) {
+    if (error) throw error;
+    res.send('Song added to the playlist');
+  });
+}
+
 module.exports={
-    getSongs,addSong,updatesong,deleteSong,deleteAllSong,getSingleSong
+    getSongs,addSong,updatesong,deleteSong,deleteAllSong,getSingleSong, addPlaylist, addSongToPlaylist
 }
