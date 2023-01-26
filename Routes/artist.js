@@ -41,3 +41,4 @@ router.delete('/deleteAllArtist',checkUserAuth,restrictTo('admin'),deleteAllArti
 module.exports=router
 
 
+module.exports = router;
