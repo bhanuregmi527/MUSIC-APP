@@ -23,8 +23,8 @@ router.post(
   addSong
 );
 router.put("/songs/:id", checkUserAuth, updatesong);
-router.delete("/deleteSong/:songID", checkUserAuth, deleteSong);
-router.delete(
+router.put("/deleteSong/:songID", checkUserAuth, deleteSong);
+router.put(
   "/deleteAllSong",
   checkUserAuth,
   restrictTo("admin"),

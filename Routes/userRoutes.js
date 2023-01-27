@@ -17,8 +17,7 @@ router.post('/login',UserController.userLogin)
 //private routes
 router.post('/changePassword',UserController.changeUserPassword)
 router.get('/loggedUser',UserController.loggedUser)
-router.delete('/deleteUser/:id',restrictTo('admin'),UserController.deleteUserById)
-
+router.put('/deleteUser/:id',restrictTo('admin'),UserController.deleteUserById)
 
 
 module.exports=router

@@ -1,4 +1,5 @@
 const mysql = require("mysql2");
+
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -6,16 +7,34 @@ const pool = mysql.createPool({
 });
 
 const getGenre = async (req, res) => {
-  pool.query("SELECT * FROM genre", function (error, results, fields) {
+  pool.query("SELECT * FROM genre WHERE isDeleted=false", function (error, results, fields) {
     if (error) throw error;
     res.send(results);
   });
 };
 
 const getSingleGenre = async (req, res) => {
+
+  // to handle empty
+  // pool.query(
+  //   "SELECT * FROM genre WHERE isDeleted=false AND genreID = ?",
+  //   [genreID],
+  //   function (error, results, fields) {
+  //     if (error) {
+  //         console.error(error);
+  //         res.status(500).send({ error: "Internal Server Error" });
+  //     }
+  //     if (results.length === 0) {
+  //         res.status(404).send({ error: "No genre found with the given id" });
+  //     } else {
+  //         res.send(results);
+  //     }
+  //   }
+  // );
+
   const genreID = req.params.genreID;
   pool.query(
-    "SELECT * FROM genre WHERE genreID = ?",
+    "SELECT * FROM genre WHERE isDeleted=false AND genreID = ?",
     [genreID],
     function (error, results, fields) {
       if (error) throw error;
@@ -51,7 +70,7 @@ const updateGenre = async (req, res) => {
 const deleteGenre = async (req, res) => {
   const genreID = req.params.genreID;
   pool.query(
-    "DELETE FROM genre WHERE genreID = ?",
+    "UPDATE genre SET isDeleted=true WHERE genreID = ?",
     [genreID],
     function (error, results, fields) {
       if (error) throw error;
@@ -60,7 +79,7 @@ const deleteGenre = async (req, res) => {
   );
 };
 const deleteAllGenre = async (req, res) => {
-  pool.query("DELETE  FROM genre", function (error, results, fields) {
+  pool.query("UPDATE genre SET isDeleted=true", function (error, results, fields) {
     if (error) throw error;
     res.send(" All Genre Deleted");
   });

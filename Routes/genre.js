@@ -16,17 +16,13 @@ router.get("/genre", getGenre);
 router.get("/getSingleGenre/:genreID", getSingleGenre);
 router.post(
   "/addGenre",
-  // checkUserAuth,
+  checkUserAuth,
   addGenre
 );
 router.put("/genre/:id", checkUserAuth, updateGenre);
-router.delete(
-  "/deleteGenre/:genreID",
-  restrictTo("admin"),
-  checkUserAuth,
-  deleteGenre
-);
-router.delete(
+router.put(
+  "/deleteGenre/:genreID",checkUserAuth,  restrictTo("admin"), deleteGenre);
+router.put(
   "/deleteAllGenre",
   checkUserAuth,
   restrictTo("admin"),

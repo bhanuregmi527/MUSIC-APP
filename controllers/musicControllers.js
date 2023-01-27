@@ -37,7 +37,7 @@ const upload=multer({
 
 
 const getSongs = async (req, res) => {
-  pool.query("SELECT * FROM songs", function (error, results, fields) {
+  pool.query("SELECT * FROM songs WHERE isDeleted=false", function (error, results, fields) {
     if (error) throw error;
     res.send(results);
   });
@@ -45,7 +45,7 @@ const getSongs = async (req, res) => {
 const getSingleSong = async (req, res) => {
   const songID = req.params.songID;
   pool.query(
-    "SELECT * FROM songs WHERE songID = ?",
+    "SELECT * FROM songs WHERE isDeleted=false AND songID = ?",
     [songID],
     function (error, results, fields) {
       if (error) throw error;
@@ -91,7 +91,7 @@ const updatesong = async (req, res) => {
 const deleteSong = async (req, res) => {
   const songID = req.params.songID;
   pool.query(
-    "DELETE FROM songs WHERE songID = ?",
+    "UPDATE  songs SET isDeleted=true WHERE songID = ?",
     [songID],
     function (error, results, fields) {
       if (error) throw error;
@@ -101,7 +101,7 @@ const deleteSong = async (req, res) => {
 };
 
 const deleteAllSong = async (req, res) => {
-  pool.query("DELETE  FROM songs", function (error, results, fields) {
+  pool.query("UPDATE songs SET isDeleted=true", function (error, results, fields) {
     if (error) throw error;
     res.send(" All songs Deleted");
   });
