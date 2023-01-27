@@ -106,7 +106,7 @@ class UserController{
 
     static deleteUserById= async(req,res)=>{
         const id= req.params.id
-        pool.query('UPDATE users SET isDeleted=true AND WHERE id = ?',[id], function (error, results, fields) {
+        pool.query('UPDATE users SET isDeleted=true  WHERE id = ?',[id], function (error, results, fields) {
         if (error) throw error;
      res.send(' deleted user from the database');
         });
