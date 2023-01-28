@@ -26,14 +26,13 @@ const artistStorage = multer.diskStorage({
         "-" +
         path.extname(file.originalname)
     );
-    console.log(req.body);
   },
 });
 const artistFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("audio")) {
+  if (file.mimetype.startsWith("image")) {
     cb(null, true);
   } else {
-    cb(new AppError("not an audio ! please upload only audio", 400), false);
+    cb(new AppError("not an image ! please upload only image", 400), false);
   }
 };
 
@@ -66,10 +65,13 @@ const getSingleArtist = async (req, res) => {
 
 const createArtist = async (req, res) => {
   const { artistID, artistName, artistBio, year, status } = req.body;
-  const artistPhoto = req.file.path;
+  console.log(req.body);
+
+  console.log(req.file);
+  const { filename } = req.file;
   pool.query(
     "INSERT INTO artist (artistID,artistName,artistBio,year,artistPhoto,status) VALUES (?,?,?,?,?,?)",
-    [artistID, artistName, artistBio, year, artistPhoto, status],
+    [artistID, artistName, artistBio, year, filename, status],
     function (error, results, fields) {
       if (error) throw error;
       res.send("aritist added to the database");
