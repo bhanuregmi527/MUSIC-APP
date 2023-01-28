@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-const express= require('express');
-const router= express.Router();
-const checkUserAuth = require('../middlewares/auth-middleware')
-const {getSongs,addSong,updatesong,deleteSong,deleteAllSong,getSingleSong, addPlaylist}=require('../controllers/musicControllers')
-const restrictTo= require('../middlewares/restrict')
-=======
 const express = require("express");
 const router = express.Router();
 const checkUserAuth = require("../middlewares/auth-middleware");
@@ -19,7 +12,6 @@ const {
   getSingleSong,
 } = require("../controllers/musicControllers");
 const restrictTo = require("../middlewares/restrict");
->>>>>>> 5d378009512858437aa96aaa90706c71b559830d
 
 //Routes
 
@@ -40,5 +32,5 @@ router.put(
 );
 
 //playlists
-router.post('/addPlaylist/:userID', addPlaylist)
+
 module.exports=router

@@ -18,14 +18,9 @@ router.post('/login',UserController.userLogin)
 router.post('/changePassword',UserController.changeUserPassword)
 router.post('/changeUserDetails',UserController.changeUserDetails)
 router.get('/loggedUser',UserController.loggedUser)
-<<<<<<< HEAD
 router.delete('/deleteUser/:id',restrictTo('admin'),UserController.deleteUserById)
 router.get("/allusers", UserController.loadAllUsers)
 
 //playlists routes
-=======
-router.put('/deleteUser/:id',restrictTo('admin'),UserController.deleteUserById)
-
->>>>>>> 5d378009512858437aa96aaa90706c71b559830d
 
 module.exports=router

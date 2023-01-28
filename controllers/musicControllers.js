@@ -105,7 +105,6 @@ const deleteAllSong = async (req, res) => {
     if (error) throw error;
     res.send(" All songs Deleted");
   });
-<<<<<<< HEAD
 }
 
 
@@ -127,18 +126,6 @@ const addSongToPlaylist = async (req, res) => {
 }
 
 module.exports={
-    getSongs,addSong,updatesong,deleteSong,deleteAllSong,getSingleSong, addPlaylist, addSongToPlaylist
+    upload, getSongs,addSong,updatesong,deleteSong,deleteAllSong,getSingleSong, addPlaylist, addSongToPlaylist
 }
 
-=======
-};
-module.exports = {
-  upload,
-  getSongs,
-  addSong,
-  updatesong,
-  deleteSong,
-  deleteAllSong,
-  getSingleSong,
-};
->>>>>>> 5d378009512858437aa96aaa90706c71b559830d
