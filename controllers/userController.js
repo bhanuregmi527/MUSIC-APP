@@ -73,12 +73,69 @@ class UserController {
             message: "password and password_confirm doesnot match",
           });
         }
+<<<<<<< HEAD
       } else {
         res.send({ status: "failed", message: "All fields are required" });
+=======
+    }
+
+    static userLogin = async (req,res)=>{
+    
+        try {
+            const {email,password}=req.body
+            if(email&&password){
+                const [rows, fields] = await pool.promise().query('SELECT * FROM users WHERE email = ?', [email]);
+                const user = rows[0];             
+                if(user !==null){
+                    const isMatch= await bcrypt.compare(password,user.password)
+                    if((user.email===email) && isMatch){
+                        //generate JWT token
+                        const secret = process.env.JWT_SECRET_KEY
+                        const token = jwt.sign({userID:user.id},secret,{expiresIn:'5d'})
+
+                        res.send({"status":"success","message":"Login successfully","token":token})
+
+                    }else{
+                        res.send({"status":"failed","message":"Email or password doesnot match"})
+                    }
+                }else{
+                    res.send({"status":"failed","message":"Your are not a Registered User"}) 
+                }
+            }else{
+                res.send({"status":"failed","message":"All fields are required"})  
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    static changeUserPassword= async (req,res)=>{
+        const {password,password_confirm}=req.body
+        if(password&&password_confirm){
+            if(password!==password_confirm){
+                res.send({"status":"failed","message":"Password and Password-confirm doesnot match"}) 
+            }else{
+                const salt= await bcrypt.genSalt(10) 
+                const newHashPassword= await bcrypt.hash(password,salt)
+                await pool.promise().query('UPDATE users SET password = ? WHERE id = ?', [newHashPassword, req.body.id]);
+                console.log(req.users)
+                res.send({"status":"failed","message":"Password Changed Succesfully"}) 
+            }
+        }else{
+            res.send({"status":"failed","message":"All fields are required"}) 
+        }
+    }
+    static loggedUser = async (req, res) => {
+        pool.query("SELECT * FROM users WHERE isDeleted=false", function (error, results, fields) {
+            if (error) throw error;
+            res.send(results);
+          });
+>>>>>>> 5d378009512858437aa96aaa90706c71b559830d
       }
     }
   };
 
+<<<<<<< HEAD
 
 
 
@@ -132,6 +189,13 @@ class UserController {
         res.send({
           status: "failed",
           message: "Password and Password-confirm doesnot match",
+=======
+    static deleteUserById= async(req,res)=>{
+        const id= req.params.id
+        pool.query('UPDATE users SET isDeleted=true  WHERE id = ?',[id], function (error, results, fields) {
+        if (error) throw error;
+     res.send(' deleted user from the database');
+>>>>>>> 5d378009512858437aa96aaa90706c71b559830d
         });
       } else {
         const salt = await bcrypt.genSalt(10);
