@@ -1,22 +1,20 @@
 const express = require("express");
 const bodyparser = require("body-parser");
-const mysql = require("mysql2");
+const mysql = require("mysql");
 var app = express();
-const cors = require("cors");
-
 require("dotenv").config();
 const routes = require("./Routes/songs");
 const artistRoutes = require("./Routes/artist");
 const genreRoutes = require("./Routes/genre");
 const userRoutes = require("./Routes/userRoutes");
-
+const cors = require("cors");
 const port = process.env.PORT || 5000;
 
 //parsing middleware
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
-
-app.use(cors());
+const whitelist = ["http://localhost:3000/"];
+app.use(cors(whitelist));
 
 app.use("/public/img/artist", express.static("./public/img/artist"));
 
@@ -38,5 +36,5 @@ pool.getConnection((err, connection) => {
 });
 
 app.listen(port, () => {
-  console.log(`listenig in port http://localhost:${port}`);
+  console.log(`listenig in port ${port}`);
 });
