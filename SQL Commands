@@ -7,3 +7,5 @@ CREATE TABLE users (
   password VARCHAR(255) NOT NULL,
   password_confirm VARCHAR(255) NOT NULL,
 );
+
+CREATE TABLE `music`.`songs` (`songID` INT(10) NOT NULL , `songName` VARCHAR(255) NOT NULL , `Description` TEXT NOT NULL , `songDuration` INT NOT NULL , `genreID` INT(10) NOT NULL , `dateAdded` DATE NOT NULL , `artistID` INT(10) NOT NULL , PRIMARY KEY (`songID`)) ENGINE = InnoDB;
