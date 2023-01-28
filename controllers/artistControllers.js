@@ -53,10 +53,10 @@ const getSingleArtist = async (req, res) => {
 
 const createArtist = async (req, res) => {
   const { artistID, artistName, artistBio, year, status } = req.body;
-  const { artistPhoto } = req.file;
+  const { filename } = req.file;
   pool.query(
     "INSERT INTO artist (artistID,artistName,artistBio,year,artistPhoto,status) VALUES (?,?,?,?,?,?)",
-    [artistID, artistName, artistBio, year, artistPhoto, status],
+    [artistID, artistName, artistBio, year, filename, status],
     function (error, results, fields) {
       if (error) throw error;
       res.send("aritistadded to the database");

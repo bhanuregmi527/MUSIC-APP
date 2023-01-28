@@ -18,6 +18,8 @@ app.use(bodyparser.json());
 
 app.use(cors());
 
+app.use("/public/img/artist", express.static("./public/img/artist"));
+
 //root route
 app.get("/", (req, res) => {
   res.send("hello this is root route");
