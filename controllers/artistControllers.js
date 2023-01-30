@@ -79,11 +79,13 @@ const createArtist = async (req, res) => {
   );
 };
 const updateArtist = async (req, res) => {
-  const artistID = req.params.id;
-  const { artistName, artistBio, year, artistPhoto, status } = req.body;
+  const artistID = req.params.artistID;
+  const { artistName, artistBio, year, status } = req.body;
+  console.log(req);
+  const { filename } = req.file;
   pool.query(
     "UPDATE artist SET artistName=?, artistBio=?,year=?,artistPhoto=?,status=? WHERE artistID = ?",
-    [artistName, artistBio, year, artistPhoto, status, artistID],
+    [artistName, artistBio, year, filename, status, artistID],
     function (error, results, fields) {
       if (error) throw error;
       res.send("artist updated in the database");

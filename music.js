@@ -17,6 +17,7 @@ const whitelist = ["http://localhost:3000/"];
 app.use(cors(whitelist));
 
 app.use("/public/img/artist", express.static("./public/img/artist"));
+app.use("/public/songs", express.static("./public/songs"));
 
 //root route
 app.get("/", (req, res) => {
