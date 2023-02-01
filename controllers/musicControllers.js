@@ -76,7 +76,7 @@ const addSong = async (req, res) => {
 };
 
 const updatesong = async (req, res) => {
-  const songID = req.params.id;
+  const songID = req.params.songID;
   const { songName, Description, songDuration, genreID, dateAdded, artistID } =
     req.body;
   pool.query(

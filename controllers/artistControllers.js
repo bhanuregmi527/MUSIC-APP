@@ -1,6 +1,6 @@
 
-const multer = require("multer");
-const path = require('path');
+const multer = require('multer');
+const path =require('path');
 const mysql = require("mysql");
 const AppError = require("../middlewares/appErrors");
 
@@ -12,7 +12,8 @@ const pool = mysql.createPool({
 
 const artistStorage=multer.diskStorage({
   destination: (req,file,cb)=>{
-    cb(null,'public/img/artist');
+    console.log(req.file.path)
+    cb(null,'public/artistPhoto');
   },
   filename:(req,file,cb)=>{
     const artistID=req.body.artistID;
@@ -24,10 +25,10 @@ const artistStorage=multer.diskStorage({
 
 })
 const artistFilter=(req,file,cb)=>{
-  if(file.mimetype.startsWith('audio')){
+  if(file.mimetype.startsWith('image')){
     cb(null,true)
   }else{
-    cb(new AppError('not an audio ! please upload only audio',400),false)
+    cb(new AppError('not an image ! please upload only audio',400),false)
   }
 }
 
@@ -58,9 +59,10 @@ const getSingleArtist = async (req, res) => {
 };
 
 const createArtist = async (req, res) => {
+ 
 const { artistID, artistName, artistBio, year,status} = req.body;
-const artistPhoto =req.file.path;
-pool.query('INSERT INTO artist (artistID,artistName,artistBio,year,artistPhoto,status) VALUES (?,?,?,?,?,?)', [artistID, artistName, artistBio, year,artistPhoto,status], function (error, results, fields) {
+const { filename } = req.file;
+pool.query('INSERT INTO artist (artistID,artistName,artistBio,year,artistPhoto,status) VALUES (?,?,?,?,?,?)', [artistID, artistName, artistBio, year,filename,status], function (error, results, fields) {
 if (error) throw error;
 res.send('aritist added to the database');
 });
