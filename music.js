@@ -1,35 +1,23 @@
-const express= require('express');
-const bodyparser= require('body-parser');
-const mysql= require('mysql');
-var app= express();
-require('dotenv').config();
-// const routes=require('./Routes/songs')
-// const artistRoutes=require('./Routes/artist')
-// const genreRoutes=require('./Routes/genre')
-// const userRoutes=require('./Routes/userRoutes');
-// const upload= require('./Routes/artist').upload
-
-
+const express = require("express");
+const bodyparser = require("body-parser");
+const mysql = require("mysql");
+var app = express();
 require("dotenv").config();
 const routes = require("./Routes/songs");
 const artistRoutes = require("./Routes/artist");
 const genreRoutes = require("./Routes/genre");
 const userRoutes = require("./Routes/userRoutes");
-
-const port = process.env.PORT || 6000;
+const cors = require("cors");
+const port = process.env.PORT || 5000;
 
 //parsing middleware
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
+const whitelist = ["http://localhost:3000/"];
+app.use(cors(whitelist));
 
-//root route
-app.get('/',(req,res)=>{
-  res.send('hello this is root route')
-})
-app.use('/v1',routes)
-app.use('/v1',artistRoutes)
-app.use('/v1',genreRoutes)
-app.use('/v1',userRoutes)
+app.use("/public/img/artist", express.static("./public/img/artist"));
+app.use("/public/songs", express.static("./public/songs"));
 
 //root route
 app.get("/", (req, res) => {
@@ -49,5 +37,5 @@ pool.getConnection((err, connection) => {
 });
 
 app.listen(port, () => {
-  console.log(`listenig in port http://localhost:${port}`);
+  console.log(`listenig in port ${port}`);
 });

@@ -23,7 +23,7 @@ var checkUserAuth = async(req,res,next)=>{
             const [rows, fields] = await pool.promise().query('SELECT * FROM users WHERE id = ?', [userID]);
             const user = rows[0];
             req.user=user
-           
+            console.log(user); 
             next()
         } catch (error) {
             res.status(401).send({"status":"failed", "message":"unauthorized User"})
