@@ -22,7 +22,12 @@ router.post(
   upload.single("artistPhoto"),
   createArtist
 );
-router.put("/updateArtist/:artistID", checkUserAuth, updateArtist);
+router.put(
+  "/updateArtist/:artistID",
+  checkUserAuth,
+  upload.single("artistPhoto"),
+  updateArtist
+);
 router.delete(
   "/deleteArtist/:artistID",
   checkUserAuth,

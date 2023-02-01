@@ -16,7 +16,9 @@ app.use(bodyparser.json());
 const whitelist = ["http://localhost:3000/"];
 app.use(cors(whitelist));
 app.use("/public/img/artist", express.static("./public/img/artist"));
+app.use("/public/songs", express.static("./public/songs"));
 app.use("/public/img/user", express.static("./public/img/user"));
+
 //root route
 app.get("/", (req, res) => {
   res.send("hello this is root route");
@@ -33,7 +35,6 @@ pool.getConnection((err, connection) => {
   if (err) throw err;
   console.log(`db connected ` + connection.threadId);
 });
-
 app.listen(port, () => {
   console.log(`listenig in port ${port}`);
 });

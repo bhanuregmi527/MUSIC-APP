@@ -11,38 +11,6 @@ const pool = mysql.createConnection({
   database: process.env.DB_NAME,
 });
 
-const userStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/img/user");
-  },
-  filename: (req, file, cb) => {
-    const userId = req.body.userId;
-    const ext = file.mimetype.split("/")[1];
-    cb(
-      null,
-      file.fieldname +
-        "-" +
-        Date.now() +
-        "-" +
-        userId +
-        "-" +
-        path.extname(file.originalname)
-    );
-  },
-});
-
-const userFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image")) {
-    cb(null, true);
-  } else {
-    cb(new AppError("not an image ! please upload only image", 400), false);
-  }
-};
-const upload = multer({
-  storage: userStorage,
-  fileFilter: userFilter,
-});
-
 class UserController {
   static userRegistration = async (req, res) => {
     const { name, email, password, password_confirm } = req.body;
@@ -190,12 +158,11 @@ class UserController {
   };
 
   static changeUserProfilePhoto = async (req, res) => {
-    const { userId } = req.body;
-    
     const { filename } = req.file;
+    const id= req.body.userId;
     pool.query(
       "UPDATE users SET userProfilePhoto = ? WHERE id = ?",
-      [filename, userId],
+      [filename, id],
       function (error) {
         if (error) throw error;
         res.send("Profile photo updated successfully");
@@ -227,3 +194,4 @@ class UserController {
   };
 }
 module.exports = UserController;
+
