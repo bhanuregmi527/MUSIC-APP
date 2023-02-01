@@ -17,6 +17,7 @@ router.post('/login',UserController.userLogin)
 //private routes
 router.post('/changePassword',UserController.changeUserPassword)
 router.post('/changeUserDetails',UserController.changeUserDetails)
+router.post('/changeUserProfile', UserController.changeUserProfilePhoto)
 router.get('/loggedUser',UserController.loggedUser)
 router.delete('/deleteUser/:id',restrictTo('admin'),UserController.deleteUserById)
 router.get("/allusers", UserController.loadAllUsers)

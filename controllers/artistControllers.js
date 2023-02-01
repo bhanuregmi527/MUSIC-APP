@@ -66,7 +66,6 @@ const getSingleArtist = async (req, res) => {
 const createArtist = async (req, res) => {
   const { artistID, artistName, artistBio, year, status } = req.body;
   console.log(req.body);
-
   console.log(req.file);
   const { filename } = req.file;
   pool.query(

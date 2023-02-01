@@ -15,9 +15,8 @@ app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 const whitelist = ["http://localhost:3000/"];
 app.use(cors(whitelist));
-
 app.use("/public/img/artist", express.static("./public/img/artist"));
-
+app.use("/public/img/user", express.static("./public/img/user"));
 //root route
 app.get("/", (req, res) => {
   res.send("hello this is root route");

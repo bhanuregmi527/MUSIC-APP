@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const multer = require("multer");
 
 dotenv.config();
 const mysql = require("mysql2");
@@ -10,20 +11,37 @@ const pool = mysql.createConnection({
   database: process.env.DB_NAME,
 });
 
-
-
-const multer = require("multer");
-const storage = multer.diskStorage({
+const userStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/");
+    cb(null, "public/img/user");
   },
   filename: (req, file, cb) => {
-    cb(null, `${file.fieldname}-${Date.now()}.jpg`);
+    const userId = req.body.userId;
+    const ext = file.mimetype.split("/")[1];
+    cb(
+      null,
+      file.fieldname +
+        "-" +
+        Date.now() +
+        "-" +
+        userId +
+        "-" +
+        path.extname(file.originalname)
+    );
   },
 });
-const upload = multer({ storage });
 
-
+const userFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("not an image ! please upload only image", 400), false);
+  }
+};
+const upload = multer({
+  storage: userStorage,
+  fileFilter: userFilter,
+});
 
 class UserController {
   static userRegistration = async (req, res) => {
@@ -78,9 +96,6 @@ class UserController {
       }
     }
   };
-
-
-
 
   static userLogin = async (req, res) => {
     try {
@@ -143,35 +158,51 @@ class UserController {
             req.body.id,
           ]);
         console.log(req.users);
-        res.send({ status: "success", message: "Password Changed Succesfully" });
+        res.send({
+          status: "success",
+          message: "Password Changed Succesfully",
+        });
       }
     } else {
       res.send({ status: "failed", message: "All fields are required" });
     }
   };
 
-
-
   static changeUserDetails = async (req, res) => {
     const { name, email } = req.body;
     console.log(req.body);
     if (name && email) {
-        await pool
-          .promise()
-          .query("UPDATE users SET  name = ?, email = ? WHERE id = ?", [
-            name,
-            email,
-            req.body.id,
-          ]);
-        console.log(req.users);
-       res.send({ status: "success", message: "User Details Changed Succesfully" });
-      
+      await pool
+        .promise()
+        .query("UPDATE users SET  name = ?, email = ? WHERE id = ?", [
+          name,
+          email,
+          req.body.id,
+        ]);
+      console.log(req.users);
+      res.send({
+        status: "success",
+        message: "User Details Changed Succesfully",
+      });
     } else {
       res.send({ status: "failed", message: "All fields are required" });
     }
   };
-  
-  
+
+  static changeUserProfilePhoto = async (req, res) => {
+    const { userId } = req.body;
+    
+    const { filename } = req.file;
+    pool.query(
+      "UPDATE users SET userProfilePhoto = ? WHERE id = ?",
+      [filename, userId],
+      function (error) {
+        if (error) throw error;
+        res.send("Profile photo updated successfully");
+      }
+    );
+  };
+
   static loggedUser = async (req, res) => {
     res.send({ user: req.user });
   };
