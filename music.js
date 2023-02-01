@@ -7,8 +7,9 @@ const routes = require("./Routes/songs");
 const artistRoutes = require("./Routes/artist");
 const genreRoutes = require("./Routes/genre");
 const userRoutes = require("./Routes/userRoutes");
+const handleBadRoute=require('./middlewares/handleBadRoute')
 const cors = require("cors");
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 6000;
 
 //parsing middleware
 app.use(bodyparser.urlencoded({ extended: false }));
@@ -18,12 +19,20 @@ app.use(cors(whitelist));
 
 app.use("/public/img/artist", express.static("./public/img/artist"));
 app.use("/public/songs", express.static("./public/songs"));
-
+app.use("/v1", routes, artistRoutes, genreRoutes, userRoutes);
+app.use(handleBadRoute);
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.send({
+    message: err.message,
+    error: err
+  });
+});
 //root route
 app.get("/", (req, res) => {
   res.send("hello this is root route");
 });
-app.use("/v1", routes, artistRoutes, genreRoutes, userRoutes);
+
 
 //Database
 const pool = mysql.createPool({

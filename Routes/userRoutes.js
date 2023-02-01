@@ -18,7 +18,7 @@ router.post('/login',UserController.userLogin)
 router.post('/changePassword',UserController.changeUserPassword)
 router.post('/changeUserDetails',UserController.changeUserDetails)
 router.get('/loggedUser',UserController.loggedUser)
-router.delete('/deleteUser/:id',restrictTo('admin'),UserController.deleteUserById)
+router.put('/deleteUser/:id',restrictTo('admin'),UserController.deleteUserById)
 router.get("/allusers", UserController.loadAllUsers)
 
 //playlists routes

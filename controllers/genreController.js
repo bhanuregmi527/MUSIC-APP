@@ -68,14 +68,25 @@ const addGenre = async (req, res) => {
   );
 };
 const updateGenre = async (req, res) => {
-  const genreID = req.params.id;
+  const genreID = req.params.genreID;
   const { genreName, Description, artistID } = req.body;
+  const sql=pool.query(`UPDATE genre SET isDeleted=false ,genreName=${genreName}, Description=${Description},artistID=${artistID} WHERE genreID = ${genreID} `)
+ 
   pool.query(
-    "UPDATE genre SET genreName=?, description=?,artistID=? WHERE genreID = ?",
-    [genreID, genreName, Description, artistID],
+    "SELECT * FROM genre WHERE isDeleted=false AND genreID = ? LIMIT 1",
+    [genreID],
     function (error, results, fields) {
-      if (error) throw error;
-      res.send("Genre updated in the database");
+      
+      if (error) {
+          console.error(error);
+          res.status(500).send({ error: "Internal Server Error" });
+      }
+      if (results.length<1) {
+          res.status(404).send({ error: "No genre found with the given id" });
+      } else {
+        pool.query(sql)        
+          res.send("Genre Updated Sucessfully");
+      }
     }
   );
 };

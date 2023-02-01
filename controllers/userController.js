@@ -178,14 +178,39 @@ class UserController {
 
   static deleteUserById = async (req, res) => {
     const id = req.params.id;
-    pool.query(
-      "DELETE FROM users WHERE id = ?",
-      [id],
-      function (error, results, fields) {
-        if (error) throw error;
-        res.send(" deleted user from the database");
+  const sql=pool.query(`UPDATE users SET isDeleted=true WHERE id = ${id} `)
+ 
+  pool.query(
+    "SELECT * FROM users WHERE isDeleted=false AND id = ? LIMIT 1",
+    [id],
+    function (error, results, fields) {
+      
+      if (error) {
+          console.error(error);
+          res.status(500).send({ error: "Internal Server Error" });
       }
-    );
+      if (results.length<1) {
+          res.status(404).send({ error: "No user found with the given id" });
+      } else {
+        pool.query(sql)        
+          res.send("User Deleted Sucessfully");
+      }
+    }
+  );
+    
+    
+    
+    
+    
+    // const id = req.params.id;
+    // pool.query(
+    //   "UPDATE users SET isDeleted=true WHERE id=?",
+    //   [id],
+    //   function (error, results, fields) {
+    //     if (error) throw error;
+    //     res.send(" deleted user from the database");
+    //   }
+    // );
   };
 
   static loadAllUsers = async (req, res) => {
