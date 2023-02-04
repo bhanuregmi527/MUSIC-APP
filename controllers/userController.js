@@ -159,7 +159,7 @@ class UserController {
 
   static changeUserProfilePhoto = async (req, res) => {
     const { filename } = req.file;
-    const id= req.body.userId;
+    const id = req.body.userId;
     pool.query(
       "UPDATE users SET userProfilePhoto = ? WHERE id = ?",
       [filename, id],
@@ -174,24 +174,63 @@ class UserController {
     res.send({ user: req.user });
   };
 
+  // static deleteUserById = async (req, res) => {
+  //   const id = req.params.id;
+  //   const sql = `DELETE FROM users WHERE id = ${id}`;
+  //   pool.query(
+  //     "SELECT * FROM users WHERE id = ?",
+  //     [id],
+  //     function (error, results, fields) {
+  //       if (error) {
+  //         console.error(error);
+  //         res.status(500).send({ error: "Internal Server Error" });
+  //       }
+  //       if (results.length < 1) {
+  //         res.status(404).send({ error: "No user found with the given id" });
+  //       } else {
+  //         pool.query(sql, function (error) {
+  //           if (error) {
+  //             console.error(error);
+  //             res.status(500).send({ error: "Internal Server Error" });
+  //           } else {
+  //             res.send("User Deleted Successfully");
+  //           }
+  //         });
+  //       }
+  //     }
+  //   );
+  // };
   static deleteUserById = async (req, res) => {
     const id = req.params.id;
+    const sql = `UPDATE users SET isDeleted='true' WHERE id = ${id}`;
     pool.query(
-      "DELETE FROM users WHERE id = ?",
+      "SELECT * FROM users WHERE id = ?",
       [id],
       function (error, results, fields) {
-        if (error) throw error;
-        res.send(" deleted user from the database");
+        if (error) {
+          console.error(error);
+          res.status(500).send({ error: "Internal Server Error" });
+        }
+        if (results.length < 1) {
+          res.status(404).send({ error: "No user found with the given id" });
+        } else {
+          pool.query(sql, function (error) {
+            if (error) {
+              console.error(error);
+              res.status(500).send({ error: "Internal Server Error" });
+            } else {
+              res.send("User Deleted Successfully (soft delete)");
+            }
+          });
+        }
       }
     );
   };
-
   static loadAllUsers = async (req, res) => {
-    pool.query("SELECT * FROM users", function (error, results, fields) {
+    pool.query("SELECT * FROM users WHERE isDeleted='false'", function (error, results, fields) {
       if (error) throw error;
       res.send(results);
     });
   };
 }
 module.exports = UserController;
-
