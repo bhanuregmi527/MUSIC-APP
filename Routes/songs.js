@@ -5,6 +5,7 @@ const checkUserAuth = require("../middlewares/auth-middleware");
 const {
   upload,
   getSongs,
+  getSongsByArtistID,
   addSong,
   updatesong,
   deleteSong,
@@ -17,6 +18,7 @@ const restrictTo = require("../middlewares/restrict");
 
 router.get("/songs", getSongs);
 router.get("/getSingleSong/:songID", getSingleSong);
+router.get("/getSongsByArtistID/:artistID",getSongsByArtistID);
 router.post(
   "/addSong",
   checkUserAuth,upload.single('song'),

@@ -1,5 +1,5 @@
 const multer = require('multer');
-// const path =require("path");
+const path =require("path");
 const mysql = require("mysql");
 const AppError = require("../middlewares/appErrors");
 
@@ -11,11 +11,12 @@ const pool = mysql.createPool({
 
 const artistStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    console.log(req.file.path)
-    cb(null, ".public/img/artist/");
+    console.log(req.file)
+    cb(null, "public/img/artist/");
   },
   filename: (req, file, cb) => {
-    const artistID = req.body.artistID;
+    const artistName = req.body.artistName;
+    console.log(artistName)
     const ext = file.mimetype.split("/")[1];
     cb(
       null,
@@ -23,18 +24,18 @@ const artistStorage = multer.diskStorage({
         "-" +
         Date.now() +
         "-" +
-        artistID +
+        artistName +
         "-" +
         path.extname(file.originalname)
     );
-  },
+  }
 });
 
 const artistFilter=(req,file,cb)=>{
   if(file.mimetype.startsWith('image')){
     cb(null,true)
   }else{
-    cb(new AppError('not an audio ! please upload only audio',400),false)
+    cb(new AppError('not an image ! please upload only audio',400),false)
   }
 }
 
@@ -83,21 +84,33 @@ const getSingleArtist = async (req, res) => {
 
 const createArtist = async (req, res) => {
 const { artistID, artistName, artistBio, year,status} = req.body;
-console.log(req.file)
-  const {filename}= req.file;
-pool.query(`INSERT INTO artist artistID=${artistID},artistName=${artistName},artistBio=${artistBio},year=${year},artistPhoto=${filename},status=${status}`, function (error, results, fields) {
-  // 'INSERT INTO artist (artistID,artistName,artistBio,year,artistPhoto,status) VALUES (?,?,?,?,?,?)', [artistID, artistName, artistBio, year,filename,status]
-  if (error) throw error;
-res.send('aritist added to the database');
-});
 
+
+if(!req.file){ 
+  return res.status(400).send({error:"no photo uploaded"})
+}else{
+  const artistPhoto= req.file.filename;
+pool.query('INSERT INTO artist (artistID, artistName, artistBio, year, artistPhoto) VALUES(?,?,?,?,?)',[artistID, artistName, artistBio, year,artistPhoto], function (error, results, fields) {
+  // 'INSERT INTO artist (artistID,artistName,artistBio,year,artistPhoto,status) VALUES (?,?,?,?,?,?)', [artistID, artistName, artistBio, year,filename,status]
+  if (error) {
+    res.status(500).send({ error});
+  } else {
+    res.send('aritist added to the database');
+  }
+
+});
+}
+//
+//INSERT INTO artist (artistID, artistName, artistBio, year, artistPhoto, status) 
+//VALUES (10, 'bhanu', 'jfsakldfjklasdf', 2019, 'artistPhoto-1675499447139-bhanu-.jpg', 'active');
+//
 
 }
 const updateArtist = async (req, res) => {
   const artistID = req.params.artistID;
-  const {filename}= req.file;
+  const artistPhoto= req.filename;
   const { artistName, artistBio, year,status } = req.body;
-  const sql=pool.query(`UPDATE artist SET artistName=${artistName}, artistBio=${artistBio},year=${year},artistPhoto=${filename},status=${status} WHERE artistID = ${artistID} `)
+  const sql=pool.query(`UPDATE artist SET artistName=${artistName}, artistBio=${artistBio},year=${year},artistPhoto=${artistPhoto},status=${status} WHERE artistID = ${artistID} `)
  
   pool.query(
     "SELECT * FROM artist WHERE isDeleted=false AND artistID = ? LIMIT 1",

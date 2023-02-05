@@ -52,10 +52,10 @@ const getSingleGenre = async (req, res) => {
 };
 
 const addGenre = async (req, res) => {
-  const { genreID, genreName, Description, artistID } = req.body;
+  const { genreID, genreName, Description} = req.body;
   pool.query(
-    "INSERT INTO genre (genreID,genreName,Description,artistID) VALUES (?,?,?,?)",
-    [genreID, genreName, Description, artistID],
+    "INSERT INTO genre (genreID,genreName,Description) VALUES (?,?,?,?)",
+    [genreID, genreName, Description],
     function (error, results, fields) {
       if (error) {
           console.error(error);
@@ -69,8 +69,8 @@ const addGenre = async (req, res) => {
 };
 const updateGenre = async (req, res) => {
   const genreID = req.params.genreID;
-  const { genreName, Description, artistID } = req.body;
-  const sql=pool.query(`UPDATE genre SET isDeleted=false ,genreName=${genreName}, Description=${Description},artistID=${artistID} WHERE genreID = ${genreID} `)
+  const { genreName, Description} = req.body;
+  const sql=pool.query(`UPDATE genre SET isDeleted=false ,genreName=${genreName}, Description=${Description} WHERE genreID = ${genreID} `)
  
   pool.query(
     "SELECT * FROM genre WHERE isDeleted=false AND genreID = ? LIMIT 1",

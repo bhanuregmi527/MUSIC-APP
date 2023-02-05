@@ -13,7 +13,7 @@ const songStorage = multer.diskStorage({
     cb(null, "public/songs");
   },
   filename: (req, file, cb) => {
-    const artistID = req.body.artistID;
+    const artistName = req.body.artistName;
     const ext = file.mimetype.split("/")[1];
     cb(
       null,
@@ -21,7 +21,7 @@ const songStorage = multer.diskStorage({
         "-" +
         Date.now() +
         "-" +
-        artistID +
+        artistName +
         "-" +
         path.extname(file.originalname)
     );
@@ -29,7 +29,8 @@ const songStorage = multer.diskStorage({
   },
 });
 const songFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("audio")) {
+  console.log(file)
+  if (file.mimetype.startsWith('audio')) {
     cb(null, true);
   } else {
     cb(new AppError("not an audio ! please upload only audio", 400), false);
@@ -74,14 +75,37 @@ const getSingleSong = async (req, res) => {
   );
 
 };
+const getSongsByArtistID = async (req, res) => {
+  const artistID = req.params.artistID;
+
+  pool.query(
+    "SELECT * FROM songs WHERE isDeleted='false' AND artistID=?",
+    [artistID],
+    function (error, results, fields) {
+      if (error) {
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
+      }
+      if (results.length === 0) {
+        res
+          .status(404)
+          .send({
+            error: `Sorry! no songs found for artist with ID ${artistID}`,
+          });
+      } else {
+        res.send(results);
+      }
+    }
+  );
+};
 
 const addSong = async (req, res) => {
-  const { songID, songName, Description, genreName, dateAdded, artistName } =
+  const {  songName, Description, genreName, dateAdded, artistName,artistID } =
     req.body;
   const { filename } = req.file;
   pool.query(
-    "INSERT INTO songs (songID, songName, Description,genreName,dateAdded,artistName,song) VALUES (?,?,?,?,?,?,?)",
-    [songID, songName, Description, genreName, dateAdded, artistName, filename],
+    "INSERT INTO songs ( songName, Description,genreName,dateAdded,artistName,song,artistID) VALUES (?,?,?,?,?,?,?)",
+    [ songName, Description, genreName, dateAdded, artistName, filename,artistID],
     function (error, results, fields) {
       
         if (error) {
@@ -223,6 +247,7 @@ const addSongToPlaylist = async (req, res) => {
 module.exports = {
   upload,
   getSongs,
+  getSongsByArtistID,
   addSong,
   updatesong,
   deleteSong,
