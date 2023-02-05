@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const multer = require("multer");
 
 dotenv.config();
 const mysql = require("mysql2");
@@ -9,21 +10,6 @@ const pool = mysql.createConnection({
   user: process.env.DB_USER,
   database: process.env.DB_NAME,
 });
-
-
-
-const multer = require("multer");
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${file.fieldname}-${Date.now()}.jpg`);
-  },
-});
-const upload = multer({ storage });
-
-
 
 class UserController {
   static userRegistration = async (req, res) => {
@@ -78,9 +64,6 @@ class UserController {
       }
     }
   };
-
-
-
 
   static userLogin = async (req, res) => {
     try {
@@ -143,53 +126,108 @@ class UserController {
             req.body.id,
           ]);
         console.log(req.users);
-        res.send({ status: "success", message: "Password Changed Succesfully" });
+        res.send({
+          status: "success",
+          message: "Password Changed Succesfully",
+        });
       }
     } else {
       res.send({ status: "failed", message: "All fields are required" });
     }
   };
-
-
 
   static changeUserDetails = async (req, res) => {
     const { name, email } = req.body;
     console.log(req.body);
     if (name && email) {
-        await pool
-          .promise()
-          .query("UPDATE users SET  name = ?, email = ? WHERE id = ?", [
-            name,
-            email,
-            req.body.id,
-          ]);
-        console.log(req.users);
-       res.send({ status: "success", message: "User Details Changed Succesfully" });
-      
+      await pool
+        .promise()
+        .query("UPDATE users SET  name = ?, email = ? WHERE id = ?", [
+          name,
+          email,
+          req.body.id,
+        ]);
+      console.log(req.users);
+      res.send({
+        status: "success",
+        message: "User Details Changed Succesfully",
+      });
     } else {
       res.send({ status: "failed", message: "All fields are required" });
     }
   };
-  
-  
-  static loggedUser = async (req, res) => {
-    res.send({ user: req.user });
-  };
 
-  static deleteUserById = async (req, res) => {
-    const id = req.params.id;
+  static changeUserProfilePhoto = async (req, res) => {
+    const { filename } = req.file;
+    const id = req.body.userId;
     pool.query(
-      "DELETE FROM users WHERE id = ?",
-      [id],
-      function (error, results, fields) {
+      "UPDATE users SET userProfilePhoto = ? WHERE id = ?",
+      [filename, id],
+      function (error) {
         if (error) throw error;
-        res.send(" deleted user from the database");
+        res.send("Profile photo updated successfully");
       }
     );
   };
 
+  static loggedUser = async (req, res) => {
+    res.send({ user: req.user });
+  };
+
+  // static deleteUserById = async (req, res) => {
+  //   const id = req.params.id;
+  //   const sql = `DELETE FROM users WHERE id = ${id}`;
+  //   pool.query(
+  //     "SELECT * FROM users WHERE id = ?",
+  //     [id],
+  //     function (error, results, fields) {
+  //       if (error) {
+  //         console.error(error);
+  //         res.status(500).send({ error: "Internal Server Error" });
+  //       }
+  //       if (results.length < 1) {
+  //         res.status(404).send({ error: "No user found with the given id" });
+  //       } else {
+  //         pool.query(sql, function (error) {
+  //           if (error) {
+  //             console.error(error);
+  //             res.status(500).send({ error: "Internal Server Error" });
+  //           } else {
+  //             res.send("User Deleted Successfully");
+  //           }
+  //         });
+  //       }
+  //     }
+  //   );
+  // };
+  static deleteUserById = async (req, res) => {
+    const id = req.params.id;
+    const sql = `UPDATE users SET isDeleted='true' WHERE id = ${id}`;
+    pool.query(
+      "SELECT * FROM users WHERE id = ?",
+      [id],
+      function (error, results, fields) {
+        if (error) {
+          console.error(error);
+          res.status(500).send({ error: "Internal Server Error" });
+        }
+        if (results.length < 1) {
+          res.status(404).send({ error: "No user found with the given id" });
+        } else {
+          pool.query(sql, function (error) {
+            if (error) {
+              console.error(error);
+              res.status(500).send({ error: "Internal Server Error" });
+            } else {
+              res.send("User Deleted Successfully (soft delete)");
+            }
+          });
+        }
+      }
+    );
+  };
   static loadAllUsers = async (req, res) => {
-    pool.query("SELECT * FROM users", function (error, results, fields) {
+    pool.query("SELECT * FROM users WHERE isDeleted='false'", function (error, results, fields) {
       if (error) throw error;
       res.send(results);
     });

@@ -30,7 +30,7 @@ var checkUserAuth = async(req,res,next)=>{
         }
     }
     if(!token){
-        res.status(401).send({"status":"failed", "message":"unauthorized User, No Token"})
+        res.status(403).send({"status":"failed", "message":"unauthorized User, No Token"})
     } 
 }
 module.exports= checkUserAuth 

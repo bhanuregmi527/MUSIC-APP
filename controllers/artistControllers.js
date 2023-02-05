@@ -2,13 +2,11 @@ const multer = require("multer");
 const path = require("path");
 const mysql = require("mysql");
 const AppError = require("../middlewares/appErrors");
-
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   database: process.env.DB_NAME,
 });
-
 const artistStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "public/img/artist");
@@ -35,7 +33,6 @@ const artistFilter = (req, file, cb) => {
     cb(new AppError("not an image ! please upload only image", 400), false);
   }
 };
-
 const upload = multer({
   storage: artistStorage,
   fileFilter: artistFilter,
@@ -43,18 +40,17 @@ const upload = multer({
 
 const getAllArtist = async (req, res) => {
   pool.query(
-    "SELECT * FROM artist WHERE isDeleted=false",
+    "SELECT * FROM artist WHERE isDeleted='false'",
     function (error, results, fields) {
       if (error) throw error;
       res.send(results);
     }
   );
 };
-
 const getSingleArtist = async (req, res) => {
   const artistID = req.params.artistID;
   pool.query(
-    "SELECT * FROM artist WHERE isDeleted=false AND artistID = ?",
+    "SELECT * FROM artist WHERE isDeleted='false' AND artistID = ?",
     [artistID],
     function (error, results, fields) {
       if (error) throw error;
@@ -62,11 +58,9 @@ const getSingleArtist = async (req, res) => {
     }
   );
 };
-
 const createArtist = async (req, res) => {
   const { artistID, artistName, artistBio, year, status } = req.body;
   console.log(req.body);
-
   console.log(req.file);
   const { filename } = req.file;
   pool.query(
@@ -92,25 +86,34 @@ const updateArtist = async (req, res) => {
     }
   );
 };
-
 const deleteArtist = async (req, res) => {
   const artistID = req.params.artistID;
+  const sql = `UPDATE artist SET isDeleted= 'true' WHERE artistID = ${artistID}`;
   pool.query(
-    "UPDATE artist SET isDeleted=true WHERE artistID = ?",
+    "SELECT * FROM artist WHERE artistID = ?",
     [artistID],
     function (error, results, fields) {
-      if (error) throw error;
-      res.send("Artistdeleted from the database");
+      if (results.length < 1) {
+        res.status(404).send({ error: "No user found with the given id" });
+      } else {
+        pool.query(sql, function (error) {
+          if (error) {
+            console.error(error);
+            res.status(500).send({ error: "Internal Server Error" });
+          } else {
+            res.send("User Deleted Successfully (soft delete)");
+          }
+        });
+      }
     }
   );
 };
 const deleteAllArtist = async (req, res) => {
-  pool.query("DELETE  FROM artist", function (error, results, fields) {
+  pool.query("UPDATE artist SET isDEleted='true'", function (error, results, fields) {
     if (error) throw error;
     res.send(" All Artist Deleted");
   });
 };
-
 module.exports = {
   upload,
   getAllArtist,

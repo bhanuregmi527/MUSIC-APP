@@ -1,7 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
 const checkUserAuth = require("../middlewares/auth-middleware");
+// const {upload,getAllArtist,getSingleArtist,createArtist,updateArtist,deleteArtist,deleteAllArtist}=require('../controllers/artistControllers')
+// const restrictTo= require('../middlewares/restrict')
+
+// const express = require("express");
+
+const multer = require("multer");
+// const checkUserAuth = require("../middlewares/auth-middleware");
 const {
   upload,
   getAllArtist,
