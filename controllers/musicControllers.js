@@ -43,37 +43,66 @@ const upload = multer({
 });
 
 const getSongs = async (req, res) => {
-  pool.query("SELECT * FROM songs WHERE isDeleted=false", function (error, results, fields) {
-    if (error) {
-        console.error(error);
-        res.status(500).send({ error: "Internal Server Error" });
-    }
-    if (results.length === 0) {
-        res.status(404).send({ error: "Sorry! the songs are Empty, Please  add songsfirst" });
-    } else {
-        res.send(results);
-    }
-  }) 
-  
-};
-const getSingleSong = async (req, res) => {
-  const songID = req.params.songID;
   pool.query(
-    "SELECT * FROM songs WHERE isDeleted=false AND songID = ?",
-    [songID],
+    "SELECT * FROM songs WHERE isDeleted='false'",
     function (error, results, fields) {
       if (error) {
-          console.error(error);
-          res.status(500).send({ error: "Internal Server Error" });
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
       }
       if (results.length === 0) {
-          res.status(404).send({ error: "No song found with the given id" });
+        res
+          .status(404)
+          .send({
+            error: "Sorry! the songs are Empty, Please  add songsfirst",
+          });
       } else {
-          res.send(results);
+        res.send(results);
       }
     }
   );
+};
+const getSongsByArtistId = async (req, res) => {
+  const artistID = req.params.artistID;
+  
+  pool.query(
+    "SELECT * FROM songs WHERE isDeleted='false' AND artistID=?",
+    [artistID],
+    function (error, results, fields) {
+      if (error) {
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
+      }
+      if (results.length === 0) {
+        res
+          .status(404)
+          .send({
+            error: `Sorry! no songs found for artist with ID ${artistID}`,
+          });
+      } else {
+        res.send(results);
+      }
+    }
+  );
+};
 
+const getSingleSong = async (req, res) => {
+  const songID = req.params.songID;
+  pool.query(
+    "SELECT * FROM songs WHERE isDeleted='false' AND songID = ?",
+    [songID],
+    function (error, results, fields) {
+      if (error) {
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
+      }
+      if (results.length === 0) {
+        res.status(404).send({ error: "No song found with the given id" });
+      } else {
+        res.send(results);
+      }
+    }
+  );
 };
 const getSongsByArtistID = async (req, res) => {
   const artistID = req.params.artistID;
@@ -107,42 +136,41 @@ const addSong = async (req, res) => {
     "INSERT INTO songs ( songName, Description,genreName,dateAdded,artistName,song,artistID) VALUES (?,?,?,?,?,?,?)",
     [ songName, Description, genreName, dateAdded, artistName, filename,artistID],
     function (error, results, fields) {
-      
-        if (error) {
-            console.error(error);
-            res.status(500).send({ error});
-        }
-         else {
-            res.send("Song added succesfully");
-        }
+      if (error) {
+        console.error(error);
+        res.status(500).send({ error });
+      } else {
+        res.send("Song added succesfully");
       }
-    
+    }
   );
 };
 
 const updatesong = async (req, res) => {
   const songID = req.params.songID;
-  const { songName, Description, songDuration, genreID, dateAdded, artistID } =req.body;
-  const sql=pool.query(`UPDATE genre SET isDeleted=false ,songName=${songName}, Description=${Description},songDuration=${songDuration},genreID=${genreID},dateAdded=${dateAdded},artistID=${artistID} WHERE songID = ${songID} `)
- 
+  const { songName, Description, songDuration, genreID, dateAdded, artistID } =
+    req.body;
+  const sql = pool.query(
+    `UPDATE genre SET isDeleted=false ,songName=${songName}, Description=${Description},songDuration=${songDuration},genreID=${genreID},dateAdded=${dateAdded},artistID=${artistID} WHERE songID = ${songID} `
+  );
+
   pool.query(
     "SELECT * FROM songs WHERE isDeleted=false AND songID = ? LIMIT 1",
     [genreID],
     function (error, results, fields) {
-      
       if (error) {
-          console.error(error);
-          res.status(500).send({ error: "Internal Server Error" });
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
       }
-      if (results.length<1) {
-          res.status(404).send({ error: "No Song found with the given id" });
+      if (results.length < 1) {
+        res.status(404).send({ error: "No Song found with the given id" });
       } else {
-        pool.query(sql)        
-          res.send("Song Updated Sucessfully");
+        pool.query(sql);
+        res.send("Song Updated Sucessfully");
       }
     }
-  ); 
- 
+  );
+
   // const songID = req.params.songID;
   // const { songName, Description, songDuration, genreID, dateAdded, artistID } =
   //   req.body;
@@ -157,59 +185,47 @@ const updatesong = async (req, res) => {
 };
 const deleteSong = async (req, res) => {
   const songID = req.params.songID;
-  const sql=pool.query(`UPDATE songs SET isDeleted=true WHERE songID = ${songID} `)
- 
+  const sql = pool.query(
+    `UPDATE songs SET isDeleted='true' WHERE songID = ${songID} `
+  );
+
   pool.query(
-    "SELECT * FROM songs WHERE isDeleted=false AND songID = ? LIMIT 1",
+    "SELECT * FROM songs WHERE isDeleted='false' AND songID = ? LIMIT 1",
     [songID],
     function (error, results, fields) {
-      
       if (error) {
-          console.error(error);
-          res.status(500).send({ error: "Internal Server Error" });
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
       }
-      if (results.length<1) {
-          res.status(404).send({ error: "No song found with the given id" });
+      if (results.length < 1) {
+        res.status(404).send({ error: "No song found with the given id" });
       } else {
-        pool.query(sql)        
-          res.send("song Deleted Sucessfully");
+        pool.query(sql);
+        res.send("song Deleted Sucessfully");
       }
     }
   );
-  
-  
-  
-  
-  // const songID = req.params.songID;
-  // pool.query(
-  //   "UPDATE  songs SET isDeleted=true WHERE songID = ?",
-  //   [songID],
-  //   function (error, results, fields) {
-  //     if (error) throw error;
-  //     res.send("Song deleted from the database");
-  //   }
-  // );
 };
 
 const deleteAllSong = async (req, res) => {
-  const sql=pool.query(`UPDATE songs SET isDeleted=true `)
-  
-  pool.query("SELECT * FROM songs WHERE isDeleted=false", function (error, results, fields) {
-    if (error) {
-      console.error(error);
-      res.status(500).send({ error: "Internal Server Error" });
-  }
-  if (results.length<1) {
-      res.status(404).send({ error: "Song are Empty" });
-  } else {
-    pool.query(sql)        
-      res.send("All Song Deleted Sucessfully");
-  }
-  });
- 
- 
- 
- 
+  const sql = pool.query(`UPDATE songs SET isDeleted=true `);
+
+  pool.query(
+    "SELECT * FROM songs WHERE isDeleted=false",
+    function (error, results, fields) {
+      if (error) {
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
+      }
+      if (results.length < 1) {
+        res.status(404).send({ error: "Song are Empty" });
+      } else {
+        pool.query(sql);
+        res.send("All Song Deleted Sucessfully");
+      }
+    }
+  );
+
   // pool.query(
   //   "UPDATE songs SET isDeleted=true",
   //   function (error, results, fields) {
@@ -255,4 +271,5 @@ module.exports = {
   getSingleSong,
   addPlaylist,
   addSongToPlaylist,
+  getSongsByArtistId,
 };

@@ -1,7 +1,6 @@
-
-const express= require('express');
-const router= express.Router();
-const checkUserAuth= require('../middlewares/auth-middleware')
+const express = require("express");
+const router = express.Router();
+const checkUserAuth = require("../middlewares/auth-middleware");
 // const {upload,getAllArtist,getSingleArtist,createArtist,updateArtist,deleteArtist,deleteAllArtist}=require('../controllers/artistControllers')
 // const restrictTo= require('../middlewares/restrict')
 
@@ -20,7 +19,6 @@ const {
 } = require("../controllers/artistControllers");
 const restrictTo = require("../middlewares/restrict");
 const AppError = require("../middlewares/appErrors");
-
 
 router.get("/getAllArtist", getAllArtist);
 router.get("/getSingleArtist/:artistID", getSingleArtist);

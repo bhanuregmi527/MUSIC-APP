@@ -16,13 +16,14 @@ app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 const whitelist = ["http://localhost:3000/"];
 app.use(cors(whitelist));
-
 app.use("/public/img/artist", express.static("./public/img/artist"));
 app.use("/public/songs", express.static("./public/songs"));
+app.use("/public/img/user", express.static("./public/img/user"));
+
 app.use("/v1", routes, artistRoutes, genreRoutes, userRoutes);
 app.use(handleBadRoute);
 app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
+  res.status(err.status || 6000);
   res.send({
     message: err.message,
     error: err
@@ -44,7 +45,6 @@ pool.getConnection((err, connection) => {
   if (err) throw err;
   console.log(`db connected ` + connection.threadId);
 });
-
 app.listen(port, () => {
   console.log(`listenig in port ${port}`);
 });
