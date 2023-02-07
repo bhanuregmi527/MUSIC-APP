@@ -23,7 +23,7 @@ app.use("/public/img/user", express.static("./public/img/user"));
 app.use("/v1", routes, artistRoutes, genreRoutes, userRoutes);
 app.use(handleBadRoute);
 app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
+  res.status(err.status || 5000);
   res.send({
     message: err.message,
     error: err

@@ -6,6 +6,7 @@ const multer = require("multer");
 const UserController = require("../controllers/userController");
 const checkUserAuth = require("../middlewares/auth-middleware");
 const restrictTo = require("../middlewares/restrict");
+const { updateUser } = require("../controllers/userController");
 
 ////////
 
@@ -66,6 +67,13 @@ router.delete(
   UserController.deleteUserById
 );
 router.get("/allusers", UserController.loadAllUsers);
+router.get("/singleuser/:id", UserController.getSingleUser);
+router.put(
+  "/updateUser/:id",
+  checkUserAuth,
+  upload.single("userProfilePhoto"),
+  updateUser
+);
 
 //playlists routes
 

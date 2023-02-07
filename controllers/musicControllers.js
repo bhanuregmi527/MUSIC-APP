@@ -61,13 +61,13 @@ const getSongs = async (req, res) => {
     }
   );
 };
-const getSongsByArtistId = async (req, res) => {
+const getSongsByArtistID = async (req, res) => {
   const artistID = req.params.artistID;
-  
   pool.query(
     "SELECT * FROM songs WHERE isDeleted='false' AND artistID=?",
     [artistID],
     function (error, results, fields) {
+      console.log(results);
       if (error) {
         console.error(error);
         res.status(500).send({ error: "Internal Server Error" });
@@ -246,5 +246,5 @@ module.exports = {
   getSingleSong,
   addPlaylist,
   addSongToPlaylist,
-  getSongsByArtistId,
+  getSongsByArtistID,
 };

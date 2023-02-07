@@ -174,32 +174,7 @@ class UserController {
     res.send({ user: req.user });
   };
 
-  // static deleteUserById = async (req, res) => {
-  //   const id = req.params.id;
-  //   const sql = `DELETE FROM users WHERE id = ${id}`;
-  //   pool.query(
-  //     "SELECT * FROM users WHERE id = ?",
-  //     [id],
-  //     function (error, results, fields) {
-  //       if (error) {
-  //         console.error(error);
-  //         res.status(500).send({ error: "Internal Server Error" });
-  //       }
-  //       if (results.length < 1) {
-  //         res.status(404).send({ error: "No user found with the given id" });
-  //       } else {
-  //         pool.query(sql, function (error) {
-  //           if (error) {
-  //             console.error(error);
-  //             res.status(500).send({ error: "Internal Server Error" });
-  //           } else {
-  //             res.send("User Deleted Successfully");
-  //           }
-  //         });
-  //       }
-  //     }
-  //   );
-  // };
+
   static deleteUserById = async (req, res) => {
     const id = req.params.id;
     const sql = `UPDATE users SET isDeleted='true' WHERE id = ${id}`;
@@ -232,5 +207,35 @@ class UserController {
       res.send(results);
     });
   };
+
+  static getSingleUser = async (req, res) => {
+    const id = req.params.id;
+    pool.query(
+      "SELECT * FROM users WHERE isDeleted='false' AND id = ?",
+      [id],
+      function (error, results, fields) {
+        if (error) throw error;
+        res.send(results);
+      }
+    );
+  };
+  static updateUser = async (req, res) => {
+    const id = req.params.id;
+    const { name, email, password, role } = req.body;
+    console.log(req);
+    const { filename } = req.file;
+    const salt = await bcrypt.genSalt(10);
+    const newHashPassword = await bcrypt.hash(password, salt);
+    pool.query(
+      "UPDATE users SET name=?, email=?,password=?, userProfilePhoto=?,role=? WHERE id = ?",
+      [name, email, newHashPassword, filename, role, id],
+      function (error, results, fields) {
+        if (error) throw error;
+        res.send("user updated in the database");
+      }
+    );
+  };
+
+
 }
 module.exports = UserController;
