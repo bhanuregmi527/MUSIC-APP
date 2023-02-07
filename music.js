@@ -7,6 +7,7 @@ const routes = require("./Routes/songs");
 const artistRoutes = require("./Routes/artist");
 const genreRoutes = require("./Routes/genre");
 const userRoutes = require("./Routes/userRoutes");
+const playlistRoutes=require("./Routes/playlist");
 const handleBadRoute=require('./middlewares/handleBadRoute')
 const cors = require("cors");
 const port = process.env.PORT || 6000;
@@ -20,7 +21,7 @@ app.use("/public/img/artist", express.static("./public/img/artist"));
 app.use("/public/songs", express.static("./public/songs"));
 app.use("/public/img/user", express.static("./public/img/user"));
 
-app.use("/v1", routes, artistRoutes, genreRoutes, userRoutes);
+app.use("/v1", routes, artistRoutes, genreRoutes, userRoutes,playlistRoutes);
 app.use(handleBadRoute);
 app.use(function(err, req, res, next) {
   res.status(err.status || 6000);
