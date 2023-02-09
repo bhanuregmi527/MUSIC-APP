@@ -7,21 +7,25 @@ const pool = mysql.createPool({
 });
 
 const getGenre = async (req, res) => {
-  pool.query("SELECT * FROM genre WHERE isDeleted=false", function (error, results, fields) {
-    if (error) {
+  pool.query(
+    "SELECT * FROM genre WHERE isDeleted=false",
+    function (error, results, fields) {
+      if (error) {
         console.error(error);
         res.status(500).send({ error: "Internal Server Error" });
-    }
-    if (results.length === 0) {
-        res.status(404).send({ error: "Sorry! the Genre is Empty, Please  add Genre first" });
-    } else {
+      }
+      if (results.length === 0) {
+        res.status(404).send({
+          error: "Sorry! the Genre is Empty, Please  add Genre first",
+        });
+      } else {
         res.send(results);
+      }
     }
-  })
+  );
 };
 
 const getSingleGenre = async (req, res) => {
-
   // to handle empty
   const genreID = req.params.genreID;
   pool.query(
@@ -29,18 +33,17 @@ const getSingleGenre = async (req, res) => {
     [genreID],
     function (error, results, fields) {
       if (error) {
-          console.error(error);
-          res.status(500).send({ error: "Internal Server Error" });
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
       }
       if (results.length === 0) {
-          res.status(404).send({ error: "No genre found with the given id" });
+        res.status(404).send({ error: "No genre found with the given id" });
       } else {
-          res.send(results);
+        res.send(results);
       }
     }
   );
 
-  
   // pool.query(
   //   "SELECT * FROM genre WHERE isDeleted=false AND genreID = ?",
   //   [genreID],
@@ -52,40 +55,42 @@ const getSingleGenre = async (req, res) => {
 };
 
 const addGenre = async (req, res) => {
-  const { genreID, genreName, Description, artistID } = req.body;
+  const { genreName, Description } = req.body;
   pool.query(
-    "INSERT INTO genre (genreID,genreName,Description,artistID) VALUES (?,?,?,?)",
-    [genreID, genreName, Description, artistID],
+    "INSERT INTO genre (genreName,Description) VALUES (?,?)",
+    [genreName, Description],
     function (error, results, fields) {
       if (error) {
-          console.error(error);
-          res.status(500).send({ error});
-      }
-       else {
-          res.send("Genre added succesfully");
+        console.error(error);
+        res.status(500).send({ error });
+      } else {
+        res.send("Genre added succesfully");
       }
     }
   );
 };
 const updateGenre = async (req, res) => {
   const genreID = req.params.genreID;
-  const { genreName, Description, artistID } = req.body;
-  const sql=pool.query(`UPDATE genre SET isDeleted=false ,genreName=${genreName}, Description=${Description},artistID=${artistID} WHERE genreID = ${genreID} `)
- 
+  const { genreName, Description } = req.body;
+  console.log(req.body);
+  const sql = pool.query(
+    "UPDATE genre SET isDeleted=false, genreName=?, Description=? WHERE genreID = ?",
+    [genreName, Description, genreID]
+  );
+
   pool.query(
     "SELECT * FROM genre WHERE isDeleted=false AND genreID = ? LIMIT 1",
     [genreID],
     function (error, results, fields) {
-      
       if (error) {
-          console.error(error);
-          res.status(500).send({ error: "Internal Server Error" });
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
       }
-      if (results.length<1) {
-          res.status(404).send({ error: "No genre found with the given id" });
+      if (results.length < 1) {
+        res.status(404).send({ error: "No genre found with the given id" });
       } else {
-        pool.query(sql)        
-          res.send("Genre Updated Sucessfully");
+        pool.query(sql);
+        res.send("Genre Updated Sucessfully");
       }
     }
   );
@@ -93,41 +98,45 @@ const updateGenre = async (req, res) => {
 
 const deleteGenre = async (req, res) => {
   const genreID = req.params.genreID;
-  const sql=pool.query(`UPDATE genre SET isDeleted=true WHERE genreID = ${genreID} `)
- 
+  const sql = pool.query(
+    `UPDATE genre SET isDeleted=true WHERE genreID = ${genreID} `
+  );
+
   pool.query(
     "SELECT * FROM genre WHERE isDeleted=false AND genreID = ? LIMIT 1",
     [genreID],
     function (error, results, fields) {
-      
       if (error) {
-          console.error(error);
-          res.status(500).send({ error: "Internal Server Error" });
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
       }
-      if (results.length<1) {
-          res.status(404).send({ error: "No genre found with the given id" });
+      if (results.length < 1) {
+        res.status(404).send({ error: "No genre found with the given id" });
       } else {
-        pool.query(sql)        
-          res.send("Genre Deleted Sucessfully");
+        pool.query(sql);
+        res.send("Genre Deleted Sucessfully");
       }
     }
   );
 };
 const deleteAllGenre = async (req, res) => {
-  const sql=pool.query(`UPDATE genre SET isDeleted=true `)
-  
-  pool.query("SELECT * FROM genre WHERE isDeleted=false", function (error, results, fields) {
-    if (error) {
-      console.error(error);
-      res.status(500).send({ error: "Internal Server Error" });
-  }
-  if (results.length<1) {
-      res.status(404).send({ error: "Genre is Empty" });
-  } else {
-    pool.query(sql)        
-      res.send("All Genre Deleted Sucessfully");
-  }
-  });
+  const sql = pool.query(`UPDATE genre SET isDeleted=true `);
+
+  pool.query(
+    "SELECT * FROM genre WHERE isDeleted=false",
+    function (error, results, fields) {
+      if (error) {
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
+      }
+      if (results.length < 1) {
+        res.status(404).send({ error: "Genre is Empty" });
+      } else {
+        pool.query(sql);
+        res.send("All Genre Deleted Sucessfully");
+      }
+    }
+  );
 };
 
 module.exports = {

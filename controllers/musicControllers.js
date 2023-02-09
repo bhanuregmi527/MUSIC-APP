@@ -50,11 +50,9 @@ const getSongs = async (req, res) => {
         res.status(500).send({ error: "Internal Server Error" });
       }
       if (results.length === 0) {
-        res
-          .status(404)
-          .send({
-            error: "Sorry! the songs are Empty, Please  add songsfirst",
-          });
+        res.status(404).send({
+          error: "Sorry! the songs are Empty, Please  add songsfirst",
+        });
       } else {
         res.send(results);
       }
@@ -63,7 +61,7 @@ const getSongs = async (req, res) => {
 };
 const getSongsByArtistId = async (req, res) => {
   const artistID = req.params.artistID;
-  
+
   pool.query(
     "SELECT * FROM songs WHERE isDeleted='false' AND artistID=?",
     [artistID],
@@ -73,11 +71,31 @@ const getSongsByArtistId = async (req, res) => {
         res.status(500).send({ error: "Internal Server Error" });
       }
       if (results.length === 0) {
-        res
-          .status(404)
-          .send({
-            error: `Sorry! no songs found for artist with ID ${artistID}`,
-          });
+        res.status(404).send({
+          error: `Sorry! no songs found for artist with ID ${artistID}`,
+        });
+      } else {
+        res.send(results);
+      }
+    }
+  );
+};
+
+const getSongsByGenre = async (req, res) => {
+  const genreName = req.params.genreName;
+
+  pool.query(
+    "SELECT * FROM songs WHERE isDeleted='false' AND genreName=?",
+    [genreName],
+    function (error, results, fields) {
+      if (error) {
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
+      }
+      if (results.length === 0) {
+        res.status(404).send({
+          error: `Sorry! no songs found for genre ${genreName}`,
+        });
       } else {
         res.send(results);
       }
@@ -105,12 +123,20 @@ const getSingleSong = async (req, res) => {
 };
 
 const addSong = async (req, res) => {
-  const { songID, songName, Description, genreName, dateAdded, artistName } =
+  const { songName, Description, genreName, dateAdded, artistName, artistID } =
     req.body;
   const { filename } = req.file;
   pool.query(
-    "INSERT INTO songs (songID, songName, Description,genreName,dateAdded,artistName,song) VALUES (?,?,?,?,?,?,?)",
-    [songID, songName, Description, genreName, dateAdded, artistName, filename],
+    "INSERT INTO songs (songName, Description,genreName,dateAdded,artistName,song, artistID) VALUES (?,?,?,?,?,?,?)",
+    [
+      songName,
+      Description,
+      genreName,
+      dateAdded,
+      artistName,
+      filename,
+      artistID,
+    ],
     function (error, results, fields) {
       if (error) {
         console.error(error);
@@ -124,15 +150,28 @@ const addSong = async (req, res) => {
 
 const updatesong = async (req, res) => {
   const songID = req.params.songID;
-  const { songName, Description, songDuration, genreID, dateAdded, artistID } =
+  const { songName, Description, genreName, dateAdded, artistName, artistID } =
     req.body;
+  console.log(req.file);
+  const { filename } = req.file;
+
   const sql = pool.query(
-    `UPDATE genre SET isDeleted=false ,songName=${songName}, Description=${Description},songDuration=${songDuration},genreID=${genreID},dateAdded=${dateAdded},artistID=${artistID} WHERE songID = ${songID} `
+    "UPDATE songs SET isDeleted=false ,songName=?, Description=?,genreName=?,dateAdded=?,artistName=?, song=?, artistID=? WHERE songID = ?",
+    [
+      songName,
+      Description,
+      genreName,
+      dateAdded,
+      artistName,
+      filename,
+      artistID,
+      songID,
+    ]
   );
 
   pool.query(
     "SELECT * FROM songs WHERE isDeleted=false AND songID = ? LIMIT 1",
-    [genreID],
+    [songID],
     function (error, results, fields) {
       if (error) {
         console.error(error);
@@ -162,7 +201,7 @@ const updatesong = async (req, res) => {
 const deleteSong = async (req, res) => {
   const songID = req.params.songID;
   const sql = pool.query(
-    `UPDATE songs SET isDeleted='true' WHERE songID = ${songID} `
+    `UPDATE songs SET isDeleted=true WHERE songID = ${songID} `
   );
 
   pool.query(
@@ -247,4 +286,5 @@ module.exports = {
   addPlaylist,
   addSongToPlaylist,
   getSongsByArtistId,
+  getSongsByGenre,
 };

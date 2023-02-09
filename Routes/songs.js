@@ -11,6 +11,7 @@ const {
   deleteAllSong,
   getSingleSong,
   getSongsByArtistId,
+  getSongsByGenre,
 } = require("../controllers/musicControllers");
 const restrictTo = require("../middlewares/restrict");
 
@@ -18,13 +19,15 @@ const restrictTo = require("../middlewares/restrict");
 
 router.get("/songs", getSongs);
 router.get("/songs/:artistID", getSongsByArtistId);
+router.get("/songsByGenre/:genreName", getSongsByGenre);
 router.get("/getSingleSong/:songID", getSingleSong);
-router.post(
-  "/addSong",
-  checkUserAuth,upload.single('song'),
-  addSong
+router.post("/addSong", checkUserAuth, upload.single("song"), addSong);
+router.put(
+  "/updateSong/:songID",
+  checkUserAuth,
+  upload.single("song"),
+  updatesong
 );
-router.put("/songs/:id", checkUserAuth, updatesong);
 router.delete("/deleteSong/:songID", checkUserAuth, deleteSong);
 router.delete(
   "/deleteAllSong",
@@ -35,4 +38,4 @@ router.delete(
 
 //playlists
 
-module.exports=router
+module.exports = router;

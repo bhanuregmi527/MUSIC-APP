@@ -14,15 +14,15 @@ const restrictTo = require("../middlewares/restrict");
 
 router.get("/genre", getGenre);
 router.get("/getSingleGenre/:genreID", getSingleGenre);
-router.post(
-  "/addGenre",
+router.post("/addGenre", checkUserAuth, addGenre);
+router.put("/updateGenre/:genreID", checkUserAuth, updateGenre);
+router.delete(
+  "/deleteGenre/:genreID",
   checkUserAuth,
-  addGenre
+  restrictTo("admin"),
+  deleteGenre
 );
-router.put("/genre/:id", checkUserAuth, updateGenre);
-router.put(
-  "/deleteGenre/:genreID",checkUserAuth,  restrictTo("admin"), deleteGenre);
-router.put(
+router.delete(
   "/deleteAllGenre",
   checkUserAuth,
   restrictTo("admin"),

@@ -64,8 +64,8 @@ const createArtist = async (req, res) => {
   console.log(req.file);
   const { filename } = req.file;
   pool.query(
-    "INSERT INTO artist (artistID,artistName,artistBio,year,artistPhoto,status) VALUES (?,?,?,?,?,?)",
-    [artistID, artistName, artistBio, year, filename, status],
+    "INSERT INTO artist (artistName,artistBio,year,artistPhoto,status) VALUES (?,?,?,?,?)",
+    [artistName, artistBio, year, filename, status],
     function (error, results, fields) {
       if (error) throw error;
       res.send("aritist added to the database");
@@ -88,7 +88,7 @@ const updateArtist = async (req, res) => {
 };
 const deleteArtist = async (req, res) => {
   const artistID = req.params.artistID;
-  const sql = `UPDATE artist SET isDeleted= 'true' WHERE artistID = ${artistID}`;
+  const sql = `UPDATE artist SET isDeleted=true WHERE artistID = ${artistID}`;
   pool.query(
     "SELECT * FROM artist WHERE artistID = ?",
     [artistID],
@@ -109,10 +109,13 @@ const deleteArtist = async (req, res) => {
   );
 };
 const deleteAllArtist = async (req, res) => {
-  pool.query("UPDATE artist SET isDEleted='true'", function (error, results, fields) {
-    if (error) throw error;
-    res.send(" All Artist Deleted");
-  });
+  pool.query(
+    "UPDATE artist SET isDeleted=true",
+    function (error, results, fields) {
+      if (error) throw error;
+      res.send(" All Artist Deleted");
+    }
+  );
 };
 module.exports = {
   upload,
