@@ -5,6 +5,7 @@ const checkUserAuth = require("../middlewares/auth-middleware");
 const {
   upload,
   getSongs,
+  getSongsByArtistID,
   addSong,
   updatesong,
   deleteSong,
@@ -21,11 +22,22 @@ router.get("/songs", getSongs);
 router.get("/songs/:artistID", getSongsByArtistId);
 router.get("/songsByGenre/:genreName", getSongsByGenre);
 router.get("/getSingleSong/:songID", getSingleSong);
-router.post("/addSong", checkUserAuth, upload.single("song"), addSong);
+router.post(
+  "/addSong",
+  checkUserAuth,
+  upload.fields([
+    { name: "song", maxCount: 1 },
+    { name: "coverphoto", maxCount: 1 },
+  ]),
+  addSong
+);
 router.put(
   "/updateSong/:songID",
   checkUserAuth,
-  upload.single("song"),
+  upload.fields([
+    { name: "song", maxCount: 1 },
+    { name: "coverphoto", maxCount: 1 },
+  ]),
   updatesong
 );
 router.delete("/deleteSong/:songID", checkUserAuth, deleteSong);

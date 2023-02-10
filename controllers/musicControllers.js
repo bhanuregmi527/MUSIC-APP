@@ -10,10 +10,14 @@ const pool = mysql.createPool({
 
 const songStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "public/songs");
+    if (file.fieldname === "song") {
+      cb(null, "public/songs");
+    } else if (file.fieldname === "coverphoto") {
+      cb(null, "public/img/coverphoto");
+    }
   },
   filename: (req, file, cb) => {
-    const artistID = req.body.artistID;
+    const artistName = req.body.artistName;
     const ext = file.mimetype.split("/")[1];
     cb(
       null,
@@ -21,7 +25,7 @@ const songStorage = multer.diskStorage({
         "-" +
         Date.now() +
         "-" +
-        artistID +
+        artistName +
         "-" +
         path.extname(file.originalname)
     );
@@ -29,10 +33,17 @@ const songStorage = multer.diskStorage({
   },
 });
 const songFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("audio")) {
+  console.log(file);
+  if (file.mimetype.startsWith("audio") || file.mimetype.startsWith("image")) {
     cb(null, true);
   } else {
-    cb(new AppError("not an audio ! please upload only audio", 400), false);
+    cb(
+      new AppError(
+        "Unknown type ! please upload only an audio or an image",
+        400
+      ),
+      false
+    );
   }
 };
 
@@ -121,20 +132,45 @@ const getSingleSong = async (req, res) => {
     }
   );
 };
+const getSongsByArtistID = async (req, res) => {
+  const artistID = req.params.artistID;
+
+  pool.query(
+    "SELECT * FROM songs WHERE isDeleted='false' AND artistID=?",
+    [artistID],
+    function (error, results, fields) {
+      if (error) {
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
+      }
+      if (results.length === 0) {
+        res.status(404).send({
+          error: `Sorry! no songs found for artist with ID ${artistID}`,
+        });
+      } else {
+        res.send(results);
+      }
+    }
+  );
+};
 
 const addSong = async (req, res) => {
   const { songName, Description, genreName, dateAdded, artistName, artistID } =
     req.body;
-  const { filename } = req.file;
+  // console.log(req.files["song"][0].filename);
+  // console.log(req.files["coverphoto"][0].filename);
+  const song = req.files["song"][0];
+  const coverphoto = req.files["coverphoto"][0];
   pool.query(
-    "INSERT INTO songs (songName, Description,genreName,dateAdded,artistName,song, artistID) VALUES (?,?,?,?,?,?,?)",
+    "INSERT INTO songs (songName, Description,genreName,dateAdded,artistName,song, coverphoto, artistID) VALUES (?,?,?,?,?,?,?,?)",
     [
       songName,
       Description,
       genreName,
       dateAdded,
       artistName,
-      filename,
+      song.filename,
+      coverphoto.filename,
       artistID,
     ],
     function (error, results, fields) {
@@ -152,18 +188,19 @@ const updatesong = async (req, res) => {
   const songID = req.params.songID;
   const { songName, Description, genreName, dateAdded, artistName, artistID } =
     req.body;
-  console.log(req.file);
-  const { filename } = req.file;
+  const song = req.files["song"][0];
+  const coverphoto = req.files["coverphoto"][0];
 
   const sql = pool.query(
-    "UPDATE songs SET isDeleted=false ,songName=?, Description=?,genreName=?,dateAdded=?,artistName=?, song=?, artistID=? WHERE songID = ?",
+    "UPDATE songs SET isDeleted=false ,songName=?, Description=?,genreName=?,dateAdded=?,artistName=?, song=?, coverphoto=?, artistID=? WHERE songID = ?",
     [
       songName,
       Description,
       genreName,
       dateAdded,
       artistName,
-      filename,
+      song.filename,
+      coverphoto.filename,
       artistID,
       songID,
     ]
@@ -278,6 +315,7 @@ const addSongToPlaylist = async (req, res) => {
 module.exports = {
   upload,
   getSongs,
+  getSongsByArtistID,
   addSong,
   updatesong,
   deleteSong,
