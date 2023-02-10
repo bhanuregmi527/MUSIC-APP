@@ -15,7 +15,7 @@ const userStorage = multer.diskStorage({
     cb(null, "public/img/user");
   },
   filename: (req, file, cb) => {
-    const userId = req.body.userId;
+    const userId = req.user.id;
     const ext = file.mimetype.split("/")[1];
     cb(
       null,
@@ -47,6 +47,7 @@ const upload = multer({
 router.use("/changepassword", checkUserAuth);
 router.use("/loggedUser", checkUserAuth);
 router.use("/deleteUser", checkUserAuth);
+router.use("/changeUserProfile",checkUserAuth);
 
 //Publice Routes
 router.post("/register", UserController.userRegistration);
@@ -56,8 +57,9 @@ router.post("/login", UserController.userLogin);
 router.post("/changePassword", UserController.changeUserPassword);
 router.post("/changeUserDetails", UserController.changeUserDetails);
 router.post(
-  "/changeUserProfile",
+  "/changeUserProfile/:id",
   upload.single("userProfilePhoto"),
+
   UserController.changeUserProfilePhoto
 );
 router.get("/loggedUser", UserController.loggedUser);

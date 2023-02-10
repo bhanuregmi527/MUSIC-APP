@@ -17,8 +17,8 @@ const restrictTo = require("../middlewares/restrict");
 //Routes
 
 router.get("/songs", getSongs);
-router.get("/songs/:artistID", getSongsByArtistID);
 router.get("/getSingleSong/:songID", getSingleSong);
+router.get("/getSongsByArtistID/:artistID",getSongsByArtistID);
 router.post(
   "/addSong",
   checkUserAuth,upload.single('song'),

@@ -7,7 +7,7 @@ const pool = mysql.createPool({
 });
 
 const getGenre = async (req, res) => {
-  pool.query("SELECT * FROM genre WHERE isDeleted=false", function (error, results, fields) {
+  pool.query("SELECT * FROM genre WHERE isDeleted='false'", function (error, results, fields) {
     if (error) {
         console.error(error);
         res.status(500).send({ error: "Internal Server Error" });
@@ -25,7 +25,7 @@ const getSingleGenre = async (req, res) => {
   // to handle empty
   const genreID = req.params.genreID;
   pool.query(
-    "SELECT * FROM genre WHERE isDeleted=false AND genreID = ?",
+    "SELECT * FROM genre WHERE isDeleted='false' AND genreID = ?",
     [genreID],
     function (error, results, fields) {
       if (error) {
@@ -52,10 +52,10 @@ const getSingleGenre = async (req, res) => {
 };
 
 const addGenre = async (req, res) => {
-  const { genreID, genreName, Description, artistID } = req.body;
+  const { genreID, genreName, Description} = req.body;
   pool.query(
-    "INSERT INTO genre (genreID,genreName,Description,artistID) VALUES (?,?,?,?)",
-    [genreID, genreName, Description, artistID],
+    "INSERT INTO genre (genreID,genreName,Description) VALUES (?,?,?,?)",
+    [genreID, genreName, Description],
     function (error, results, fields) {
       if (error) {
           console.error(error);
@@ -69,11 +69,11 @@ const addGenre = async (req, res) => {
 };
 const updateGenre = async (req, res) => {
   const genreID = req.params.genreID;
-  const { genreName, Description, artistID } = req.body;
-  const sql=pool.query(`UPDATE genre SET isDeleted=false ,genreName=${genreName}, Description=${Description},artistID=${artistID} WHERE genreID = ${genreID} `)
+  const { genreName, Description} = req.body;
+  const sql=pool.query(`UPDATE genre SET isDeleted='false' ,genreName=${genreName}, Description=${Description} WHERE genreID = ${genreID} `)
  
   pool.query(
-    "SELECT * FROM genre WHERE isDeleted=false AND genreID = ? LIMIT 1",
+    "SELECT * FROM genre WHERE isDeleted='false' AND genreID = ? LIMIT 1",
     [genreID],
     function (error, results, fields) {
       
@@ -93,10 +93,10 @@ const updateGenre = async (req, res) => {
 
 const deleteGenre = async (req, res) => {
   const genreID = req.params.genreID;
-  const sql=pool.query(`UPDATE genre SET isDeleted=true WHERE genreID = ${genreID} `)
+  const sql=pool.query(`UPDATE genre SET isDeleted='true' WHERE genreID = ${genreID} `)
  
   pool.query(
-    "SELECT * FROM genre WHERE isDeleted=false AND genreID = ? LIMIT 1",
+    "SELECT * FROM genre WHERE isDeleted='false' AND genreID = ? LIMIT 1",
     [genreID],
     function (error, results, fields) {
       
@@ -116,7 +116,7 @@ const deleteGenre = async (req, res) => {
 const deleteAllGenre = async (req, res) => {
   const sql=pool.query(`UPDATE genre SET isDeleted=true `)
   
-  pool.query("SELECT * FROM genre WHERE isDeleted=false", function (error, results, fields) {
+  pool.query("SELECT * FROM genre WHERE isDeleted='false'", function (error, results, fields) {
     if (error) {
       console.error(error);
       res.status(500).send({ error: "Internal Server Error" });

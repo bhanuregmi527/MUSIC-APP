@@ -158,11 +158,12 @@ class UserController {
   };
 
   static changeUserProfilePhoto = async (req, res) => {
-    const { filename } = req.file;
-    const id = req.body.userId;
+    const userProfilePhoto = req.file.filename;
+    console.log("userprofilephoto:",userProfilePhoto);
+    const id = req.params.id;
     pool.query(
       "UPDATE users SET userProfilePhoto = ? WHERE id = ?",
-      [filename, id],
+      [userProfilePhoto, id],
       function (error) {
         if (error) throw error;
         res.send("Profile photo updated successfully");
