@@ -33,7 +33,7 @@ app.use(function (err, req, res, next) {
 });
 //root route
 app.get("/", (req, res) => {
-  res.send("hello this is root route");
+  res.send("hello this is root route...");
 });
 
 //Database
