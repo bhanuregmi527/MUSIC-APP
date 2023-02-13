@@ -11,15 +11,14 @@ const {
   deleteSong,
   deleteAllSong,
   getSingleSong,
-  getSongsByArtistId,
-  getSongsByGenre,
+    getSongsByGenre,
 } = require("../controllers/musicControllers");
 const restrictTo = require("../middlewares/restrict");
 
 //Routes
 
 router.get("/songs", getSongs);
-router.get("/songs/:artistID", getSongsByArtistId);
+router.get("/getSongsByArtistID/:artistID", getSongsByArtistID);
 router.get("/songsByGenre/:genreName", getSongsByGenre);
 router.get("/getSingleSong/:songID", getSingleSong);
 router.post(

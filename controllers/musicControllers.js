@@ -70,27 +70,27 @@ const getSongs = async (req, res) => {
     }
   );
 };
-const getSongsByArtistId = async (req, res) => {
-  const artistID = req.params.artistID;
+// const getSongsByArtistId = async (req, res) => {
+//   const artistID = req.params.artistID;
 
-  pool.query(
-    "SELECT * FROM songs WHERE isDeleted='false' AND artistID=?",
-    [artistID],
-    function (error, results, fields) {
-      if (error) {
-        console.error(error);
-        res.status(500).send({ error: "Internal Server Error" });
-      }
-      if (results.length === 0) {
-        res.status(404).send({
-          error: `Sorry! no songs found for artist with ID ${artistID}`,
-        });
-      } else {
-        res.send(results);
-      }
-    }
-  );
-};
+//   pool.query(
+//     "SELECT * FROM songs WHERE isDeleted='false' AND artistID=?",
+//     [artistID],
+//     function (error, results, fields) {
+//       if (error) {
+//         console.error(error);
+//         res.status(500).send({ error: "Internal Server Error" });
+//       }
+//       if (results.length === 0) {
+//         res.status(404).send({
+//           error: `Sorry! no songs found for artist with ID ${artistID}`,
+//         });
+//       } else {
+//         res.send(results);
+//       }
+//     }
+//   );
+// };
 
 const getSongsByGenre = async (req, res) => {
   const genreName = req.params.genreName;
@@ -323,6 +323,5 @@ module.exports = {
   getSingleSong,
   addPlaylist,
   addSongToPlaylist,
-  getSongsByArtistId,
-  getSongsByGenre,
+   getSongsByGenre,
 };
