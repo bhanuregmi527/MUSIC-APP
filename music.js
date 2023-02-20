@@ -10,7 +10,7 @@ const userRoutes = require("./Routes/userRoutes");
 const playlistRoutes = require("./Routes/playlist");
 const handleBadRoute = require("./middlewares/handleBadRoute");
 const cors = require("cors");
-const port = process.env.PORT || 6000;
+const port = process.env.PORT || 5000;
 //Database
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -33,7 +33,7 @@ app.use("/public/songs", express.static("./public/songs"));
 app.use("/public/img/user", express.static("./public/img/user"));
 //root route
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   pool.query(
     'SELECT * FROM  songs WHERE isDeleted="false" ORDER BY likes DESC  ',
     (error, topSongsResults) => {
@@ -50,7 +50,7 @@ app.get('/', (req, res) => {
 
           res.send({
             topSongs: topSongsResults,
-            mostPlayed: mostPlayedResults
+            mostPlayed: mostPlayedResults,
           });
         }
       );
@@ -67,7 +67,6 @@ app.use(function (err, req, res, next) {
     error: err,
   });
 });
-
 
 app.listen(port, () => {
   console.log(`listenig in port ${port}`);
