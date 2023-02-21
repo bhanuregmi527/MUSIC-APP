@@ -7,8 +7,8 @@ const routes = require("./Routes/songs");
 const artistRoutes = require("./Routes/artist");
 const genreRoutes = require("./Routes/genre");
 const userRoutes = require("./Routes/userRoutes");
-const playlistRoutes=require("./Routes/playlist");
-const handleBadRoute=require('./middlewares/handleBadRoute')
+const playlistRoutes = require("./Routes/playlist");
+const handleBadRoute = require("./middlewares/handleBadRoute");
 const cors = require("cors");
 const port = process.env.PORT || 5000;
 
@@ -18,23 +18,23 @@ app.use(bodyparser.json());
 const whitelist = ["http://localhost:3000/"];
 app.use(cors(whitelist));
 app.use("/public/img/artist", express.static("./public/img/artist"));
+app.use("/public/img/coverphoto", express.static("./public/img/coverphoto"));
 app.use("/public/songs", express.static("./public/songs"));
 app.use("/public/img/user", express.static("./public/img/user"));
 
-app.use("/v1", routes, artistRoutes, genreRoutes, userRoutes,playlistRoutes);
+app.use("/v1", routes, artistRoutes, genreRoutes, userRoutes, playlistRoutes);
 app.use(handleBadRoute);
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   res.status(err.status || 5000);
   res.send({
     message: err.message,
-    error: err
+    error: err,
   });
 });
 //root route
 app.get("/", (req, res) => {
   res.send("hello this is root route");
 });
-
 
 //Database
 const pool = mysql.createPool({

@@ -34,13 +34,13 @@ router.put(
   upload.single("artistPhoto"),
   updateArtist
 );
-router.put(
+router.delete(
   "/deleteArtist/:artistID",
   checkUserAuth,
   restrictTo("admin"),
   deleteArtist
 );
-router.put(
+router.delete(
   "/deleteAllArtist",
   checkUserAuth,
   restrictTo("admin"),
