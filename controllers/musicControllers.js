@@ -70,27 +70,27 @@ const getSongs = async (req, res) => {
     }
   );
 };
-const getSongsByArtistId = async (req, res) => {
-  const artistID = req.params.artistID;
+// const getSongsByArtistId = async (req, res) => {
+//   const artistID = req.params.artistID;
 
-  pool.query(
-    "SELECT * FROM songs WHERE isDeleted='false' AND artistID=?",
-    [artistID],
-    function (error, results, fields) {
-      if (error) {
-        console.error(error);
-        res.status(500).send({ error: "Internal Server Error" });
-      }
-      if (results.length === 0) {
-        res.status(404).send({
-          error: `Sorry! no songs found for artist with ID ${artistID}`,
-        });
-      } else {
-        res.send(results);
-      }
-    }
-  );
-};
+//   pool.query(
+//     "SELECT * FROM songs WHERE isDeleted='false' AND artistID=?",
+//     [artistID],
+//     function (error, results, fields) {
+//       if (error) {
+//         console.error(error);
+//         res.status(500).send({ error: "Internal Server Error" });
+//       }
+//       if (results.length === 0) {
+//         res.status(404).send({
+//           error: `Sorry! no songs found for artist with ID ${artistID}`,
+//         });
+//       } else {
+//         res.send(results);
+//       }
+//     }
+//   );
+// };
 
 const getSongsByGenre = async (req, res) => {
   const genreName = req.params.genreName;
@@ -155,19 +155,18 @@ const getSongsByArtistID = async (req, res) => {
 };
 
 const addSong = async (req, res) => {
-  const { songName, Description, genreName, dateAdded, artistName, artistID } =
-    req.body;
+  const { songName, Description, genreName, artistName, artistID } = req.body;
   // console.log(req.files["song"][0].filename);
   // console.log(req.files["coverphoto"][0].filename);
   const song = req.files["song"][0];
   const coverphoto = req.files["coverphoto"][0];
   pool.query(
-    "INSERT INTO songs (songName, Description,genreName,dateAdded,artistName,song, coverphoto, artistID) VALUES (?,?,?,?,?,?,?,?)",
+    "INSERT INTO songs (songName, Description,genreName,artistName,song, coverphoto, artistID) VALUES (?,?,?,?,?,?,?)",
     [
       songName,
       Description,
       genreName,
-      dateAdded,
+
       artistName,
       song.filename,
       coverphoto.filename,
@@ -312,6 +311,5 @@ module.exports = {
   getSingleSong,
   addPlaylist,
   addSongToPlaylist,
-  getSongsByArtistId,
-  getSongsByGenre,
+   getSongsByGenre,
 };
