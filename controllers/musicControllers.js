@@ -155,19 +155,18 @@ const getSongsByArtistID = async (req, res) => {
 };
 
 const addSong = async (req, res) => {
-  const { songName, Description, genreName, dateAdded, artistName, artistID } =
-    req.body;
+  const { songName, Description, genreName, artistName, artistID } = req.body;
   // console.log(req.files["song"][0].filename);
   // console.log(req.files["coverphoto"][0].filename);
   const song = req.files["song"][0];
   const coverphoto = req.files["coverphoto"][0];
   pool.query(
-    "INSERT INTO songs (songName, Description,genreName,dateAdded,artistName,song, coverphoto, artistID) VALUES (?,?,?,?,?,?,?,?)",
+    "INSERT INTO songs (songName, Description,genreName,artistName,song, coverphoto, artistID) VALUES (?,?,?,?,?,?,?)",
     [
       songName,
       Description,
       genreName,
-      dateAdded,
+
       artistName,
       song.filename,
       coverphoto.filename,

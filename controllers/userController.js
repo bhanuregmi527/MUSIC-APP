@@ -159,7 +159,7 @@ class UserController {
 
   static changeUserProfilePhoto = async (req, res) => {
     const userProfilePhoto = req.file.filename;
-    console.log("userprofilephoto:",userProfilePhoto);
+    console.log("userprofilephoto:", userProfilePhoto);
     const id = req.params.id;
     pool.query(
       "UPDATE users SET userProfilePhoto = ? WHERE id = ?",
@@ -228,10 +228,13 @@ class UserController {
     );
   };
   static loadAllUsers = async (req, res) => {
-    pool.query("SELECT * FROM users WHERE isDeleted='false'", function (error, results, fields) {
-      if (error) throw error;
-      res.send(results);
-    });
+    pool.query(
+      "SELECT * FROM users WHERE isDeleted='false'",
+      function (error, results, fields) {
+        if (error) throw error;
+        res.send(results);
+      }
+    );
   };
 }
 module.exports = UserController;
