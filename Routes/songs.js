@@ -12,6 +12,7 @@ const {
   getSingleSong,
   getSongsByArtistID,
     getSongsByGenre,
+    likeSong,
 } = require("../controllers/musicControllers");
 const restrictTo = require("../middlewares/restrict");
 
@@ -30,6 +31,7 @@ router.post(
   ]),
   addSong
 );
+router.post("/songs/like",checkUserAuth,likeSong)
 router.put(
   "/updateSong/:songID",
   checkUserAuth,

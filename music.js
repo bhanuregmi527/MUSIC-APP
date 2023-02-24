@@ -8,6 +8,8 @@ const artistRoutes = require("./Routes/artist");
 const genreRoutes = require("./Routes/genre");
 const userRoutes = require("./Routes/userRoutes");
 const playlistRoutes = require("./Routes/playlist");
+const paymentRoute=require("./Routes/payment");
+const likedRoute=require("./Routes/likedSongsByUser")
 const handleBadRoute = require("./middlewares/handleBadRoute");
 const cors = require("cors");
 const port = process.env.PORT || 5000;
@@ -58,7 +60,7 @@ app.get("/", (req, res) => {
   );
 });
 
-app.use("/v1", routes, artistRoutes, genreRoutes, userRoutes, playlistRoutes);
+app.use("/v1", routes, artistRoutes, genreRoutes, userRoutes, playlistRoutes,paymentRoute,likedRoute);
 app.use(handleBadRoute);
 app.use(function (err, req, res, next) {
   res.status(err.status || 500);

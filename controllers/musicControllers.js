@@ -300,6 +300,61 @@ const addSongToPlaylist = async (req, res) => {
   );
 };
 
+const likeSong = async (req, res) => {
+  const songID = req.body.songID;
+  const userID = req.user.id;
+
+  // check if the user has already liked the video
+  pool.query(
+    'SELECT COUNT(*) AS count FROM liked WHERE songID = ? AND userID = ?',
+    [songID, userID],
+    (error, results) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send('Internal server error');
+        return;
+      }
+      if (results[0].count > 0) {
+        // user has already liked the video, do not update the like count
+        res.status(200).send('User has already liked the video');
+        return;
+      }
+
+      // user has not yet liked the video, update the like count
+      pool.query(
+        'UPDATE songs SET likes = likes + 1 WHERE songID = ?',
+        [songID],
+        (error, results) => {
+          if (error) {
+            console.error(error);
+            res.status(500).send('Internal server error');
+            return;
+          }
+
+          // insert a record into the likes table to track the user's like
+          pool.query(
+            'INSERT INTO liked (songID, userID) VALUES (?, ?)',
+            [songID, userID],
+            (error, results) => {
+              console.log('details added to the liked table');
+              if (error) {
+                console.error(error);
+                res.status(500).send('Internal server error');
+                return;
+              }
+
+              res.status(200).send('Song liked successfully');
+            },
+          );
+        },
+      );
+    },
+  );
+};
+
+    
+ 
+
 module.exports = {
   upload,
   getSongs,
@@ -312,4 +367,5 @@ module.exports = {
   addPlaylist,
   addSongToPlaylist,
    getSongsByGenre,
+   likeSong
 };
