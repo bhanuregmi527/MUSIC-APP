@@ -10,6 +10,7 @@ const {
   deleteSong,
   deleteAllSong,
   getSingleSong,
+  getSongsByArtistID,
     getSongsByGenre,
 } = require("../controllers/musicControllers");
 const restrictTo = require("../middlewares/restrict");
