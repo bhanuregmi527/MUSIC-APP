@@ -12,7 +12,7 @@ const paymentRoute=require("./Routes/payment");
 const likedRoute=require("./Routes/likedSongsByUser")
 const handleBadRoute = require("./middlewares/handleBadRoute");
 const cors = require("cors");
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 6000;
 //Database
 const pool = mysql.createPool({
   host: process.env.DB_HOST,

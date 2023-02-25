@@ -32,26 +32,20 @@ const getAllLiked = async (req, res) => {
     
   const deleteLiked = async (req, res) => {
     const id = req.params.id;
-    const sql=pool.query(`UPDATE liked SET isDeleted='true' WHERE id = ${id} `)
-   
-    pool.query(
-      "SELECT * FROM playlist_songs WHERE isDeleted='false' AND id = ? LIMIT 1",
-      [id],
-      function (error, results, fields) {
-        
-        if (error) {
-            console.error(error);
-            res.status(500).send({ error: "Internal Server Error" });
-        }
-        if (results.length<1) {
-            res.status(404).send({ error: "No songs found in the Liked" });
-        } else {
-          pool.query(sql)        
-            res.send("songs  Deleted Sucessfully");
-        }
+    const sql = `DELETE FROM liked WHERE id = ${id}`;
+  
+    pool.query(sql, function (error, results, fields) {
+      if (error) {
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
+      } else if (results.affectedRows == 0) {
+        res.status(404).send({ error: "No songs found in the Liked" });
+      } else {
+        res.send("songs Deleted Successfully");
       }
-    );
+    });
   };
+  
   
   
   

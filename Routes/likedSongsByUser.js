@@ -9,7 +9,7 @@ const {
  deleteLiked,
   } = require("../controllers/likedController");
 router.get("/getAllLiked",checkUserAuth,getAllLiked);
-router.put("/deleteLiked/:id",checkUserAuth,deleteLiked);
+router.delete("/deleteLiked/:id",checkUserAuth,deleteLiked);
 
 
 

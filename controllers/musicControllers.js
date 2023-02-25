@@ -155,18 +155,19 @@ const getSongsByArtistID = async (req, res) => {
 };
 
 const addSong = async (req, res) => {
-  const { songName, Description, genreName, artistName, artistID } = req.body;
+  const { songName, Description, genreName, dateAdded, artistName, artistID } =
+    req.body;
   // console.log(req.files["song"][0].filename);
   // console.log(req.files["coverphoto"][0].filename);
   const song = req.files["song"][0];
   const coverphoto = req.files["coverphoto"][0];
   pool.query(
-    "INSERT INTO songs (songName, Description,genreName,artistName,song, coverphoto, artistID) VALUES (?,?,?,?,?,?,?)",
+    "INSERT INTO songs (songName, Description,genreName,dateAdded,artistName,song, coverphoto, artistID) VALUES (?,?,?,?,?,?,?,?)",
     [
       songName,
       Description,
       genreName,
-
+      dateAdded,
       artistName,
       song.filename,
       coverphoto.filename,
@@ -311,39 +312,40 @@ const addSongToPlaylist = async (req, res) => {
   );
 };
 
-const likeSong = async (req, res) => {
+const likeSong=async (req, res) => {
   const songID = req.body.songID;
-  const userID = req.user.id;
+  const userID=req.user.id;
 
   // check if the user has already liked the video
   pool.query(
-    'SELECT COUNT(*) AS count FROM liked WHERE songID = ? AND userID = ?',
+    'SELECT * FROM liked WHERE songID = ? AND userID = ? LIMIT 1',
     [songID, userID],
     (error, results) => {
+       console.log("result:",results)
       if (error) {
         console.error(error);
         res.status(500).send('Internal server error');
         return;
       }
-      if (results[0].count > 0) {
-        // user has already liked the video, do not update the like count
-        res.status(200).send('User has already liked the video');
-        return;
+      if (results.length > 0 ) {
+       // user has already liked the video, do not update the like count
+       return res.status(200).send("User has already liked the video");
       }
-
-      // user has not yet liked the video, update the like count
-      pool.query(
-        'UPDATE songs SET likes = likes + 1 WHERE songID = ?',
-        [songID],
-        (error, results) => {
-          if (error) {
-            console.error(error);
-            res.status(500).send('Internal server error');
-            return;
-          }
-
-          // insert a record into the likes table to track the user's like
-          pool.query(
+        // user has not yet liked the video, update the like count
+        pool.query(
+          'UPDATE songs SET likes = likes + 1 WHERE songID = ?',
+          [songID],
+          (error, results) => {
+            if (error) {
+              console.error(error);
+              res.status(500).send('Internal server error');
+              return;
+            }else{
+              res.send("song liked Successfully")
+            }
+          })
+           // insert a record into the likes table to track the user's like
+           pool.query(
             'INSERT INTO liked (songID, userID) VALUES (?, ?)',
             [songID, userID],
             (error, results) => {
@@ -357,12 +359,8 @@ const likeSong = async (req, res) => {
               res.status(200).send('Song liked successfully');
             },
           );
-        },
-      );
-    },
-  );
-};
-
+          
+    })};
     
  
 
