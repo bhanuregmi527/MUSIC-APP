@@ -321,31 +321,28 @@ const likeSong=async (req, res) => {
     'SELECT * FROM liked WHERE songID = ? AND userID = ? LIMIT 1',
     [songID, userID],
     (error, results) => {
-       console.log("result:",results)
+      console.log("result:",results)
       if (error) {
         console.error(error);
         res.status(500).send('Internal server error');
         return;
       }
       if (results.length > 0 ) {
-       // user has already liked the video, do not update the like count
-       return res.status(200).send("User has already liked the video");
+        // user has already liked the video, do not update the like count
+        return res.status(200).send("User has already liked the video");
       }
-        // user has not yet liked the video, update the like count
-        pool.query(
-          'UPDATE songs SET likes = likes + 1 WHERE songID = ?',
-          [songID],
-          (error, results) => {
-            if (error) {
-              console.error(error);
-              res.status(500).send('Internal server error');
-              return;
-            }else{
-              res.send("song liked Successfully")
-            }
-          })
-           // insert a record into the likes table to track the user's like
-           pool.query(
+      // user has not yet liked the video, update the like count
+      pool.query(
+        'UPDATE songs SET likes = likes + 1 WHERE songID = ?',
+        [songID],
+        (error, results) => {
+          if (error) {
+            console.error(error);
+            res.status(500).send('Internal server error');
+            return;
+          }
+          // insert a record into the likes table to track the user's like
+          pool.query(
             'INSERT INTO liked (songID, userID) VALUES (?, ?)',
             [songID, userID],
             (error, results) => {
@@ -355,13 +352,15 @@ const likeSong=async (req, res) => {
                 res.status(500).send('Internal server error');
                 return;
               }
-
               res.status(200).send('Song liked successfully');
-            },
+            }
           );
-          
-    })};
-    
+        }
+      );
+    }
+  );
+};
+
  
 
 module.exports = {
