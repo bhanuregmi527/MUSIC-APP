@@ -7,8 +7,10 @@ const checkUserAuth = require("../middlewares/auth-middleware");
 const {
    getAllLiked,
  deleteLiked,
+ AddLikedSongByUser,
   } = require("../controllers/likedController");
 router.get("/getAllLiked",checkUserAuth,getAllLiked);
+router.post("/addSongToLikedList",AddLikedSongByUser);
 router.put("/deleteLiked/:id",checkUserAuth,deleteLiked);
 
 
