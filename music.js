@@ -27,7 +27,7 @@ pool.getConnection((err, connection) => {
 //parsing middleware
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
-const whitelist = ["http://localhost:3000/"];
+const whitelist = [""];
 app.use(cors(whitelist));
 app.use("/public/img/artist", express.static("./public/img/artist"));
 app.use("/public/img/coverphoto", express.static("./public/img/coverphoto"));

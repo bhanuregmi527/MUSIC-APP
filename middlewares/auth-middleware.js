@@ -11,7 +11,7 @@ const pool= mysql.createPool({
 var checkUserAuth = async(req,res,next)=>{
     let token
     const {authorization}= req.headers
-    console.log(req.header)
+    console.log(req.headers)
     if(authorization && authorization.startsWith('Bearer')){
         try {
             token= authorization.split(' ')[1] 
