@@ -70,6 +70,25 @@ const getSongs = async (req, res) => {
     }
   );
 };
+
+const getMostPlayedSongs = async (req, res) => {
+  pool.query(
+    "SELECT * FROM  songs WHERE isDeleted=false ORDER BY played DESC",
+    function (error, results, fields) {
+      if (error) {
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
+      }
+      if (results.length === 0) {
+        res.status(404).send({
+          error: "Sorry! the songs are Empty, Please  add songsfirst",
+        });
+      } else {
+        res.send(results);
+      }
+    }
+  );
+};
 // const getSongsByArtistId = async (req, res) => {
 //   const artistID = req.params.artistID;
 
@@ -221,6 +240,35 @@ const updatesong = async (req, res) => {
       }
     }
   );
+};
+
+const updateplay = async (req, res) => {
+  const songID = req.params.songID;
+  // const { songName, Description, genreName, dateAdded, artistName, artistID } =
+  //   req.body;
+  // const song = req.files["song"][0];
+  // const coverphoto = req.files["coverphoto"][0];
+
+  const sql = pool.query("UPDATE songs SET played=played+1 WHERE songID = ?", [
+    songID,
+  ]);
+
+  pool.query(
+    "SELECT * FROM songs WHERE isDeleted=false AND songID = ? LIMIT 1",
+    [songID],
+    function (error, results, fields) {
+      if (error) {
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
+      }
+      if (results.length < 1) {
+        res.status(404).send({ error: "No Song found with the given id" });
+      } else {
+        pool.query(sql);
+        res.send("Song Updated Sucessfully");
+      }
+    }
+  );
 
   // const songID = req.params.songID;
   // const { songName, Description, songDuration, genreID, dateAdded, artistID } =
@@ -314,13 +362,15 @@ const addSongToPlaylist = async (req, res) => {
 module.exports = {
   upload,
   getSongs,
+  getMostPlayedSongs,
   getSongsByArtistID,
   addSong,
   updatesong,
+  updateplay,
   deleteSong,
   deleteAllSong,
   getSingleSong,
   addPlaylist,
   addSongToPlaylist,
-   getSongsByGenre,
+  getSongsByGenre,
 };
