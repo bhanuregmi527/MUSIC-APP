@@ -89,7 +89,7 @@ const getSinglePlaylist = async (req, res) => {
   // to handle empty
   const playlistID = req.params.playlistID;
   pool.query(
-    "SELECT p.playlistID, p.name, p.created_at, ps.song, ps.songName FROM playlists p JOIN playlist_songs ps ON p.playlistID = ps.playlist_id WHERE p.isDeleted='false' AND p.playlistID=? AND ps.isDeleted='false'  ",
+    "SELECT p.playlistID, p.name, p.created_at, ps.songID, ps.song, ps.songName FROM playlists p JOIN playlist_songs ps ON p.playlistID = ps.playlist_id WHERE p.isDeleted='false' AND p.playlistID=? AND ps.isDeleted='false'  ",
     [playlistID],
     function (error, results, fields) {
       if (error) {
@@ -128,12 +128,12 @@ const addSongsToPlaylist = async (req, res) => {
   // const playlistName= pool.query(`SELECT FROM playlists WHERE playlistID=${playlist_id}`)
   // console.log(playlistName.data);
   // const song = req.file.filename;
-  const { song, songName } = req.body;
-  console.log(song);
+  const { songID, song, songName } = req.body;
+  console.log(songID);
   // console.log(req.file);
   pool.query(
-    `INSERT INTO playlist_songs (playlist_id,song, songName) VALUES(?,?,?)`,
-    [playlist_id, song, songName],
+    `INSERT INTO playlist_songs (playlist_id, songID, song, songName) VALUES(?,?,?,?)`,
+    [playlist_id, songID, song, songName],
     function (error, results, fields) {
       if (error) {
         return res.status(500).send({ error });
@@ -149,12 +149,12 @@ const updateplaylist = async (req, res) => {
   const playlistName = req.body.playlistName;
   console.log(playlistName);
   const sql = pool.query(
-    "UPDATE playlists SET isDeleted=false ,name=? WHERE playlistID = ?",
+    "UPDATE playlists SET isDeleted='false' ,name=? WHERE playlistID = ?",
     [playlistName, playlistID]
   );
 
   pool.query(
-    "SELECT * FROM playlists WHERE isDeleted=false AND playlistID = ? LIMIT 1",
+    "SELECT * FROM playlists WHERE isDeleted='false' AND playlistID = ? LIMIT 1",
     [playlistID],
     function (error, results, fields) {
       if (error) {
@@ -175,12 +175,12 @@ const deletePlaylist = async (req, res) => {
   const playlistID = req.params.playlistID;
   console.log(playlistID);
   const sql = pool.query(
-    "UPDATE playlists SET isDeleted=true WHERE playlistID = ?",
+    "UPDATE playlists SET isDeleted='true' WHERE playlistID = ?",
     [playlistID]
   );
 
   pool.query(
-    "SELECT * FROM playlists WHERE isDeleted=false AND playlistID = ? LIMIT 1",
+    "SELECT * FROM playlists WHERE isDeleted='false' AND playlistID = ? LIMIT 1",
     [playlistID],
     function (error, results, fields) {
       if (error) {
@@ -201,12 +201,12 @@ const deleteSongFromPlaylist = async (req, res) => {
   const song = req.query.song;
   console.log(playlist_id, song);
   const sql = pool.query(
-    "UPDATE playlist_songs SET isDeleted=true WHERE playlist_id = ? AND song = ?",
+    "UPDATE playlist_songs SET isDeleted='true' WHERE playlist_id = ? AND song = ?",
     [playlist_id, song]
   );
 
   pool.query(
-    "SELECT * FROM playlist_songs WHERE isDeleted=false AND playlist_id = ? AND song = ? LIMIT 1",
+    "SELECT * FROM playlist_songs WHERE isDeleted='false' AND playlist_id = ? AND song = ? LIMIT 1",
     [playlist_id, song],
     function (error, results, fields) {
       if (error) {

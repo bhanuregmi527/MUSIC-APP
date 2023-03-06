@@ -8,7 +8,7 @@ const pool = mysql.createPool({
 
 const getGenre = async (req, res) => {
   pool.query(
-    "SELECT * FROM genre WHERE isDeleted=false",
+    "SELECT * FROM genre WHERE isDeleted='false'",
     function (error, results, fields) {
       if (error) {
         console.error(error);
@@ -29,7 +29,7 @@ const getSingleGenre = async (req, res) => {
   // to handle empty
   const genreID = req.params.genreID;
   pool.query(
-    "SELECT * FROM genre WHERE isDeleted=false AND genreID = ?",
+    "SELECT * FROM genre WHERE isDeleted='false' AND genreID = ?",
     [genreID],
     function (error, results, fields) {
       if (error) {
@@ -45,7 +45,7 @@ const getSingleGenre = async (req, res) => {
   );
 
   // pool.query(
-  //   "SELECT * FROM genre WHERE isDeleted=false AND genreID = ?",
+  //   "SELECT * FROM genre WHERE isDeleted='false' AND genreID = ?",
   //   [genreID],
   //   function (error, results, fields) {
   //     if (error) throw error;
@@ -74,12 +74,12 @@ const updateGenre = async (req, res) => {
   const { genreName, Description } = req.body;
   console.log(req.body);
   const sql = pool.query(
-    "UPDATE genre SET isDeleted=false, genreName=?, Description=? WHERE genreID = ?",
+    "UPDATE genre SET isDeleted='false', genreName=?, Description=? WHERE genreID = ?",
     [genreName, Description, genreID]
   );
 
   pool.query(
-    "SELECT * FROM genre WHERE isDeleted=false AND genreID = ? LIMIT 1",
+    "SELECT * FROM genre WHERE isDeleted='false' AND genreID = ? LIMIT 1",
     [genreID],
     function (error, results, fields) {
       if (error) {
@@ -99,11 +99,11 @@ const updateGenre = async (req, res) => {
 const deleteGenre = async (req, res) => {
   const genreID = req.params.genreID;
   const sql = pool.query(
-    `UPDATE genre SET isDeleted=true WHERE genreID = ${genreID} `
+    `UPDATE genre SET isDeleted='true' WHERE genreID = ${genreID} `
   );
 
   pool.query(
-    "SELECT * FROM genre WHERE isDeleted=false AND genreID = ? LIMIT 1",
+    "SELECT * FROM genre WHERE isDeleted='false' AND genreID = ? LIMIT 1",
     [genreID],
     function (error, results, fields) {
       if (error) {
@@ -120,10 +120,10 @@ const deleteGenre = async (req, res) => {
   );
 };
 const deleteAllGenre = async (req, res) => {
-  const sql = pool.query(`UPDATE genre SET isDeleted=true `);
+  const sql = pool.query(`UPDATE genre SET isDeleted='true' `);
 
   pool.query(
-    "SELECT * FROM genre WHERE isDeleted=false",
+    "SELECT * FROM genre WHERE isDeleted='false'",
     function (error, results, fields) {
       if (error) {
         console.error(error);

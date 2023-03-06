@@ -73,7 +73,7 @@ const getSongs = async (req, res) => {
 
 const getMostPlayedSongs = async (req, res) => {
   pool.query(
-    "SELECT * FROM  songs WHERE isDeleted=false ORDER BY played DESC",
+    "SELECT * FROM  songs WHERE isDeleted='false' ORDER BY played DESC",
     function (error, results, fields) {
       if (error) {
         console.error(error);
@@ -211,7 +211,7 @@ const updatesong = async (req, res) => {
   const coverphoto = req.files["coverphoto"][0];
 
   const sql = pool.query(
-    "UPDATE songs SET isDeleted=false ,songName=?, Description=?,genreName=?,dateAdded=?,artistName=?, song=?, coverphoto=?, artistID=? WHERE songID = ?",
+    "UPDATE songs SET isDeleted='false' ,songName=?, Description=?,genreName=?,dateAdded=?,artistName=?, song=?, coverphoto=?, artistID=? WHERE songID = ?",
     [
       songName,
       Description,
@@ -226,7 +226,7 @@ const updatesong = async (req, res) => {
   );
 
   pool.query(
-    "SELECT * FROM songs WHERE isDeleted=false AND songID = ? LIMIT 1",
+    "SELECT * FROM songs WHERE isDeleted='false' AND songID = ? LIMIT 1",
     [songID],
     function (error, results, fields) {
       if (error) {
@@ -255,7 +255,7 @@ const updateplay = async (req, res) => {
   ]);
 
   pool.query(
-    "SELECT * FROM songs WHERE isDeleted=false AND songID = ? LIMIT 1",
+    "SELECT * FROM songs WHERE isDeleted='false' AND songID = ? LIMIT 1",
     [songID],
     function (error, results, fields) {
       if (error) {
@@ -286,7 +286,7 @@ const updateplay = async (req, res) => {
 const deleteSong = async (req, res) => {
   const songID = req.params.songID;
   const sql = pool.query(
-    `UPDATE songs SET isDeleted=true WHERE songID = ${songID} `
+    `UPDATE songs SET isDeleted='true' WHERE songID = ${songID} `
   );
 
   pool.query(
@@ -308,10 +308,10 @@ const deleteSong = async (req, res) => {
 };
 
 const deleteAllSong = async (req, res) => {
-  const sql = pool.query(`UPDATE songs SET isDeleted=true `);
+  const sql = pool.query(`UPDATE songs SET isDeleted='true'`);
 
   pool.query(
-    "SELECT * FROM songs WHERE isDeleted=false",
+    "SELECT * FROM songs WHERE isDeleted='false'",
     function (error, results, fields) {
       if (error) {
         console.error(error);
