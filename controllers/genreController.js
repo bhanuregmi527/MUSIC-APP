@@ -45,7 +45,7 @@ const getSingleGenre = async (req, res) => {
   );
 
   // pool.query(
-  //   "SELECT * FROM genre WHERE isDeleted=false AND genreID = ?",
+  //   "SELECT * FROM genre WHERE isDeleted='false' AND genreID = ?",
   //   [genreID],
   //   function (error, results, fields) {
   //     if (error) throw error;

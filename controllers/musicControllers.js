@@ -212,7 +212,7 @@ const updatesong = async (req, res) => {
   const coverphoto = req.files["coverphoto"][0];
 
   const sql = pool.query(
-    "UPDATE songs SET isDeleted=false ,songName=?, Description=?,genreName=?,dateAdded=?,artistName=?, song=?, coverphoto=?, artistID=? WHERE songID = ?",
+    "UPDATE songs SET isDeleted='false' ,songName=?, Description=?,genreName=?,dateAdded=?,artistName=?, song=?, coverphoto=?, artistID=? WHERE songID = ?",
     [
       songName,
       Description,
@@ -256,7 +256,7 @@ const updateplay = async (req, res) => {
   ]);
 
   pool.query(
-    "SELECT * FROM songs WHERE isDeleted=false AND songID = ? LIMIT 1",
+    "SELECT * FROM songs WHERE isDeleted='false' AND songID = ? LIMIT 1",
     [songID],
     function (error, results, fields) {
       if (error) {
@@ -300,7 +300,7 @@ const deleteAllSong = async (req, res) => {
   const sql = pool.query(`UPDATE songs SET isDeleted='true' `);
 
   pool.query(
-    "SELECT * FROM songs WHERE isDeleted=false",
+    "SELECT * FROM songs WHERE isDeleted='false'",
     function (error, results, fields) {
       if (error) {
         console.error(error);

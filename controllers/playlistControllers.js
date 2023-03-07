@@ -89,7 +89,7 @@ const getSinglePlaylist = async (req, res) => {
   // to handle empty
   const playlistID = req.params.playlistID;
   pool.query(
-    "SELECT p.playlistID, p.name, p.created_at, ps.song, ps.songName FROM playlists p JOIN playlist_songs ps ON p.playlistID = ps.playlist_id WHERE p.isDeleted='false' AND p.playlistID=? AND ps.isDeleted='false'  ",
+    "SELECT p.playlistID, p.name, p.created_at, ps.songID, ps.song, ps.songName FROM playlists p JOIN playlist_songs ps ON p.playlistID = ps.playlist_id WHERE p.isDeleted='false' AND p.playlistID=? AND ps.isDeleted='false'  ",
     [playlistID],
     function (error, results, fields) {
       if (error) {
@@ -128,12 +128,12 @@ const addSongsToPlaylist = async (req, res) => {
   // const playlistName= pool.query(`SELECT FROM playlists WHERE playlistID=${playlist_id}`)
   // console.log(playlistName.data);
   // const song = req.file.filename;
-  const { song, songName } = req.body;
-  console.log(song);
+  const { songID, song, songName } = req.body;
+  console.log(songID);
   // console.log(req.file);
   pool.query(
-    `INSERT INTO playlist_songs (playlist_id,song, songName) VALUES(?,?,?)`,
-    [playlist_id, song, songName],
+    `INSERT INTO playlist_songs (playlist_id, songID, song, songName) VALUES(?,?,?,?)`,
+    [playlist_id, songID, song, songName],
     function (error, results, fields) {
       if (error) {
         return res.status(500).send({ error });
