@@ -13,6 +13,8 @@ router.post('/khalti/payment',checkUserAuth, function(req, res) {
   const id= req.user.id;
   const KHALTI_VERIFY = 'https://khalti.com/api/v2/payment/verify/';
   const { token, amount } = req.body;
+  console.log(token);
+  console.log("amount:",amount)
 
   if (!token || !amount) {
     return res.status(400).json({
@@ -37,7 +39,7 @@ router.post('/khalti/payment',checkUserAuth, function(req, res) {
 
   requestp(options)
     .then((result) => {
-      pool.query(`UPDATE users SET isSubscribed='true' WHERE id=${id}`, (error, results) => {
+      pool.query(`UPDATE users SET account_type='premium' WHERE id=${id}`, (error, results) => {
         if (error) {
           console.error(error);
           return res.status(500).json({

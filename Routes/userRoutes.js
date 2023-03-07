@@ -47,7 +47,7 @@ const upload = multer({
 router.use("/changepassword", checkUserAuth);
 router.use("/loggedUser", checkUserAuth);
 router.use("/deleteUser", checkUserAuth);
-router.use("/changeUserProfile",checkUserAuth);
+router.use("/changeUserProfile", checkUserAuth);
 
 //Publice Routes
 router.post("/register", UserController.userRegistration);

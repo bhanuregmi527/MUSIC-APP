@@ -13,55 +13,53 @@ const pool = mysql.createConnection({
 
 class UserController {
   static userRegistration = async (req, res) => {
-    const { name, email, password, password_confirm } = req.body;
-    const result = await pool
-      .promise()
-      .query(`SELECT * FROM users WHERE email = ?`, [email]);
-    const user = result[0];
-    if (user.length > 0) {
-      res.send({ status: "failed", message: "Email already exit" });
-    } else {
-      if (name && email && password && password_confirm) {
-        if (password === password_confirm) {
-          try {
-            const salt = await bcrypt.genSalt(10);
-            const hashPassword = await bcrypt.hash(password, salt);
-
-            pool.promise().query("INSERT INTO users SET ?", {
-              name: name,
-              email: email,
-              password: hashPassword,
-            });
-
-            const [rows, fields] = await pool
-              .promise()
-              .query("SELECT * FROM users WHERE email = ?", [email]);
-            //  const saved_user =  await pool.promise().query('SELECT * FROM users WHERE email = ?', [email]);
-            const saved_user = rows[0];
-            console.log(saved_user.id);
-            // generate JWT token
-            const secret = process.env.JWT_SECRET_KEY;
-            const token = jwt.sign({ userID: saved_user.id }, secret, {
-              expiresIn: "5d",
-            });
-            console.log(token);
-            res.send({
-              status: "success",
-              message: "Registration success",
-              token: token,
-            });
-          } catch (error) {
-            console.log(error);
-          }
-        } else {
-          res.send({
-            status: "failed",
-            message: "password and password_confirm doesnot match",
-          });
-        }
-      } else {
-        res.send({ status: "failed", message: "All fields are required" });
+    try {
+      const { name, email, password, password_confirm } = req.body;
+      const result = await pool
+        .promise()
+        .query(`SELECT * FROM users WHERE email = ?`, [email]);
+      const user = result[0];
+      if (user.length > 0) {
+        return res
+          .status(400)
+          .json({ status: "failed", message: "Email already exists" });
       }
+      if (!name || !email || !password || !password_confirm) {
+        return res
+          .status(400)
+          .json({ status: "failed", message: "All fields are required" });
+      }
+      if (password !== password_confirm) {
+        return res
+          .status(400)
+          .json({ status: "failed", message: "Passwords do not match" });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashPassword = await bcrypt.hash(password, salt);
+      const insertResult = await pool
+        .promise()
+        .query("INSERT INTO users SET ?", {
+          name: name,
+          email: email,
+          password: hashPassword,
+        });
+      const saved_user_id = insertResult[0].insertId;
+      // generate JWT token
+      const secret = process.env.JWT_SECRET_KEY;
+      const token = jwt.sign({ userID: saved_user_id }, secret, {
+        expiresIn: "5d",
+      });
+      res.json({
+        status: "success",
+        message: "Registration success",
+        token: token,
+      });
+    } catch (error) {
+      console.log(error);
+      res
+        .status(500)
+        .json({ status: "failed", message: "Internal server error" });
     }
   };
 
@@ -90,7 +88,7 @@ class UserController {
           } else {
             res.send({
               status: "failed",
-              message: "Email or password doesnot match",
+              message: isMatch ? "Email is incorrect" : "Password is incorrect",
             });
           }
         } else {
@@ -104,6 +102,7 @@ class UserController {
       }
     } catch (error) {
       console.log(error);
+      res.send({ status: "failed", message: "Invalid Credentials" });
     }
   };
 
@@ -137,29 +136,28 @@ class UserController {
   };
 
   static changeUserDetails = async (req, res) => {
-    const { name, email } = req.body;
+    const { name, email, id } = req.body;
+    console.log(name, email, id);
     console.log(req.body);
-    if (name && email) {
-      await pool
-        .promise()
-        .query("UPDATE users SET  name = ?, email = ? WHERE id = ?", [
-          name,
-          email,
-          req.body.id,
-        ]);
+    if (name || email || id) {
+      const query =
+        "UPDATE users SET " +
+        (name ? "name = ?, " : "") +
+        (email ? "email = ? " : "") +
+        "WHERE id = ?";
+      const values = [name, email, id].filter((value) => value !== undefined);
+      await pool.promise().query(query, values);
       console.log(req.users);
       res.send({
         status: "success",
-        message: "User Details Changed Succesfully",
+        message: "User Details Changed Successfully",
       });
     } else {
-      res.send({ status: "failed", message: "All fields are required" });
+      res.send({ status: "failed", message: "At least one field is required" });
     }
   };
-
   static changeUserProfilePhoto = async (req, res) => {
     const userProfilePhoto = req.file.filename;
-    console.log("userprofilephoto:", userProfilePhoto);
     const id = req.params.id;
     pool.query(
       "UPDATE users SET userProfilePhoto = ? WHERE id = ?",
@@ -174,7 +172,6 @@ class UserController {
   static loggedUser = async (req, res) => {
     res.send({ user: req.user });
   };
-
 
   static deleteUserById = async (req, res) => {
     const id = req.params.id;
@@ -223,6 +220,7 @@ class UserController {
       }
     );
   };
+
   static updateUser = async (req, res) => {
     const id = req.params.id;
     const { name, email, password, role } = req.body;
@@ -239,7 +237,5 @@ class UserController {
       }
     );
   };
-
-
 }
 module.exports = UserController;

@@ -5,20 +5,27 @@ const checkUserAuth = require("../middlewares/auth-middleware");
 const {
   upload,
   getSongs,
+  getMostPlayedSongs,
+  getSongsByArtistID,
   addSong,
   updatesong,
+  updateplay,
   deleteSong,
   deleteAllSong,
   getSingleSong,
-  getSongsByArtistID,
-    getSongsByGenre,
-    likeSong,
+  getSongsByGenre,
+  likeSong,
+  commentSong,
+  getAllCommentsINSong,
+  deleteComment,
 } = require("../controllers/musicControllers");
 const restrictTo = require("../middlewares/restrict");
 
 //Routes
 
 router.get("/songs", getSongs);
+router.get("/getMostPlayedSongs", getMostPlayedSongs);
+router.get("/getAllComments/:songID", getAllCommentsINSong);
 router.get("/getSongsByArtistID/:artistID", getSongsByArtistID);
 router.get("/songsByGenre/:genreName", getSongsByGenre);
 router.get("/getSingleSong/:songID", getSingleSong);
@@ -31,7 +38,9 @@ router.post(
   ]),
   addSong
 );
-router.post("/songs/like",checkUserAuth,likeSong)
+router.post("/songs/like", likeSong);
+router.post("/songs/postcomment", checkUserAuth, commentSong);
+router.put("/deletecomment/:commentID",deleteComment);
 router.put(
   "/updateSong/:songID",
   checkUserAuth,
@@ -41,6 +50,7 @@ router.put(
   ]),
   updatesong
 );
+router.put("/updateplay/:songID", updateplay);
 router.delete("/deleteSong/:songID", checkUserAuth, deleteSong);
 router.delete(
   "/deleteAllSong",

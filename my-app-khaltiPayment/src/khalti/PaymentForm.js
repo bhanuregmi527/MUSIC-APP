@@ -54,7 +54,7 @@ function PaymentForm() {
   const handleSubmit = (event) => {
     // minimum transaction amount must be 10, i.e 1000 in paisa.
     const checkout = new KhaltiCheckout(config);
-    checkout.show({ amount: amount * 100 }); // convert to paisa
+    checkout.show({ amount: amount }); // convert to paisa
     event.preventDefault();
   };
 
